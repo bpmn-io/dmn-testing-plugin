@@ -27,7 +27,8 @@ export default class AutoSavePlugin extends PureComponent {
 
   evaluateDmn(inputVariables) {
     console.log('Now send to DMN engine and retrieve results');
-    console.log(inputVariables)
+    console.log(inputVariables);
+
     // TODO
   }
 
