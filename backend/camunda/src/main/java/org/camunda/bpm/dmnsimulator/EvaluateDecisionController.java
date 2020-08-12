@@ -5,6 +5,9 @@ import static org.camunda.spin.Spin.*;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
@@ -111,7 +114,7 @@ public class EvaluateDecisionController {
 		}
 	}
 
-	private VariableMap getVariables(SpinJsonNode requestNode) {
+	private VariableMap getVariables(SpinJsonNode requestNode) throws Exception {
 		@SuppressWarnings({ "unchecked" })
 		HashMap<String, String> mappedVariables = (HashMap<String, String>) requestNode.prop("variables")
 				.mapTo(java.util.HashMap.class);
@@ -139,17 +142,47 @@ public class EvaluateDecisionController {
 						variables.putValueTyped(variable.getKey(), Variables.doubleValue((Double) valueObj));
 					} else if (type.equalsIgnoreCase("Long")) {
 						variables.putValueTyped(variable.getKey(), Variables.longValue((Long) valueObj));
-					} else if (type.equalsIgnoreCase("Date")) {
-						variables.putValueTyped(variable.getKey(), Variables.dateValue((Date) valueObj));
+					} else if (type.contains("Date")) {
+						Date date = getDateObject((String) valueObj);
+						if (date == null) {
+							throw new RuntimeException("Could not parse Date from String: " + (String) valueObj);
+						}
+						variables.putValueTyped(variable.getKey(), Variables.dateValue(date));
 					} else {
+						// simply put the object as untyped value
 						variables.putValue(variable.getKey(), valueObj);
 					}
 				} else {
+					// simply put the object as untyped value
 					variables.putValue(variable.getKey(), valueObj);
 				}
 			}
 		}
 		return variables;
+	}
+
+	private Date getDateObject(String dateString) {
+		Date date = null;
+		// @formatter:off
+		String[] formats = new String[] { 
+				"yyyy-MM-dd'T'HH:mm:ss.SSSZ",
+				"yyyy-MM-dd'T'HH:mm:ssZ", 
+				"yyyy-MM-dd'T'HH:mm:ss.SSS", 
+				"yyyy-MM-dd'T'HH:mm:ss",
+				"yyyy-MM-dd" 
+				};
+		// @formatter:on
+		for (String format : formats) {
+			DateFormat df = new SimpleDateFormat(format);
+			try {
+				date = df.parse(dateString);
+				break;
+			} catch (ParseException e) {
+				// ignore and try the next possible format
+			}
+		}
+		return date;
+
 	}
 
 	private DmnEngine buildDecisionEngine() {
