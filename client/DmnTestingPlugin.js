@@ -25,9 +25,14 @@ export default class AutoSavePlugin extends PureComponent {
     };
   }
 
-  evaluateDmn(inputVariables) {
+  evaluateDmn = async inputVariables => {
+    const { activeTab } = this.state;
+
+    const xml = activeTab.file.contents;
+
     console.log('Now send to DMN engine and retrieve results');
     console.log(inputVariables);
+    console.log(xml);
 
     // TODO
   }
@@ -53,19 +58,24 @@ export default class AutoSavePlugin extends PureComponent {
     });
   }
 
-  save() {
+  openModal = async () => {
+    const tab = await this.saveActiveTab();
+
+    // don't open modal if tab has not been saved
+    if (!tab) {
+      return;
+    }
+
+    this.setState({ modalOpen: true });
+  }
+
+  saveActiveTab() {
     const {
-      displayNotification,
       triggerAction
     } = this.props;
 
     // trigger a tab save operation
-    triggerAction('save')
-      .then(tab => {
-        if (!tab) {
-          return displayNotification({ title: 'Failed to save' });
-        }
-      });
+    return triggerAction('save-tab', { tab: this.state.activeTab });
   }
 
   render() {
@@ -74,11 +84,11 @@ export default class AutoSavePlugin extends PureComponent {
     // we can use fills to hook React components into certain places of the UI
     return (activeTab && activeTab.type === 'dmn') ? <Fragment>
       <Fill slot="toolbar" group="9_autoSave">
-        <button type="button" onClick={ () => this.setState({ modalOpen: true }) }>
+        <button type="button" onClick={ this.openModal }>
           Dmn Testing Plugin!
         </button>
       </Fill>
-      { this.state.modalOpen &&(
+      { this.state.modalOpen && (
         <TestingModal
           closeModal={ () => this.setState({ modalOpen: false }) }
           evaluate={ this.evaluateDmn }
