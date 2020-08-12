@@ -32,6 +32,7 @@
     "webpack-cli": "^3.3.11"
   },
   "dependencies": {
-    "formik": "^2.1.5"
+    "formik": "^2.1.5",
+    "run-camunda": "^5.0.0"
   }
 }
