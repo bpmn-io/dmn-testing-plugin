@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-vars */
-import React, { useState } from 'react';
+import React, { Fragment } from 'react';
 import { Formik, Form, Field, FieldArray } from 'formik';
 import { Modal } from 'camunda-modeler-plugin-helpers/components';
 
@@ -14,13 +14,17 @@ export default class ConfigModal extends React.PureComponent {
   render() {
 
     const {
-      closeModal
+      closeModal,
+      evaluate
     } = this.props;
 
     const onClose = () => closeModal();
 
+    const onSubmit = (variables) => evaluate(variables);
+
     return (
       <Modal onClose={ onClose }>
+
         <Modal.Title>
           DMN Testing
         </Modal.Title>
@@ -30,14 +34,20 @@ export default class ConfigModal extends React.PureComponent {
           <div>
             <h3>Variable inputs</h3>
             <Formik
-              id="dmnTestingInputVarsForm"
-              initialValues={ { variables: [{ 
+              initialValues={ { variables: [{
                 'name': 'varA',
                 'type': 'string',
                 'value': 'foobar' }] } }
-                onSubmit={ values => console.log(values.variables) }
+              onSubmit={
+                values => {
+                  onSubmit(values.variables);
+                }
+
+                // values => console.log(values.variables)
+              }
               render={ ({ values }) => (
-                <Form>
+                <Form
+                  id="dmnTestingInputVarsForm">
                   <FieldArray
                     name="variables"
                     render={ arrayHelpers => (
@@ -47,28 +57,24 @@ export default class ConfigModal extends React.PureComponent {
                             <div key={ index }>
                               <Field name={ `variables.${index}.name` } />
                               <Field name={ `variables.${index}.value` } />
-                              <select
-                                name="type"
-                                value={ `variables.${index}.type` }
-                                //onChange={ handleChange }
-                              >
-                                <option value="" label="Select variable type" />
-                                <option value="string" label="string" />
-                                <option value="boolean" label="boolean" />
-                                <option value="integer" label="integer" />
-                                <option value="long" label="long" />
-                                <option value="double" label="double" />
-                                <option value="date" label="date" />
-                              </select>
+                              <Field name={ `variables.${index}.type` } component="select">
+                                <option value="">Select variable type</option>
+                                <option value="string">string</option>
+                                <option value="integer">integer</option>
+                                <option value="boolean">boolean</option>
+                                <option value="long">long</option>
+                                <option value="double">double</option>
+                                <option value="date">date</option>
+                              </Field>
                               <button
                                 type="button"
-                                onClick={ () => arrayHelpers.remove(index) } // remove a friend from the list
+                                onClick={ () => arrayHelpers.remove(index) }
                               >
                                 -
                               </button>
                               <button
                                 type="button"
-                                onClick={ () => arrayHelpers.insert(index, '') } // insert an empty string at a position
+                                onClick={ () => arrayHelpers.insert(index, '') }
                               >
                                 +
                               </button>
@@ -79,15 +85,13 @@ export default class ConfigModal extends React.PureComponent {
                             Add a variable
                           </button>
                         )}
-                                      <div>
-                   <button type="submit">Submit</button>
-                 </div>
                       </div>
                     ) }
                   />
                 </Form>
               ) }
             />
+
           </div>
         </Modal.Body>
 
@@ -98,10 +102,9 @@ export default class ConfigModal extends React.PureComponent {
           </div>
         </Modal.Footer>
       </Modal>
+
     );
   }
-
-  // we can use the built-in styles, e.g. by adding "btn btn-primary" class names
 
 }
 

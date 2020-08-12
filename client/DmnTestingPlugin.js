@@ -20,8 +20,15 @@ export default class AutoSavePlugin extends PureComponent {
 
     this.state = {
       activeTab: null,
-      modalOpen: false
+      modalOpen: false,
+      dmnInputVariables: {}
     };
+  }
+
+  evaluateDmn(inputVariables) {
+    console.log('Now send to DMN engine and retrieve results');
+    console.log(inputVariables)
+    // TODO
   }
 
   componentDidMount() {
@@ -73,6 +80,7 @@ export default class AutoSavePlugin extends PureComponent {
       { this.state.modalOpen &&(
         <TestingModal
           closeModal={ () => this.setState({ modalOpen: false }) }
+          evaluate={ this.evaluateDmn }
         />
       )}
     </Fragment> : null;
