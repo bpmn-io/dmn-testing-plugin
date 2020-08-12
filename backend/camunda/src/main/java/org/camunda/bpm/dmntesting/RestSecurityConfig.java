@@ -1,4 +1,4 @@
-package org.camunda.bpm.dmnsimulator;
+package org.camunda.bpm.dmntesting;
 
 import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.context.annotation.Configuration;

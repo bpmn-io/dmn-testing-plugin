@@ -11,7 +11,7 @@
  * limitations under the License.
  */
 
-package org.camunda.bpm.dmnsimulator;
+package org.camunda.bpm.dmntesting;
 
 import java.util.ArrayList;
 import java.util.List;

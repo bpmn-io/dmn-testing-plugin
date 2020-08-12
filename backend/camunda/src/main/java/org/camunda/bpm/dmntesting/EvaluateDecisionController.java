@@ -1,4 +1,4 @@
-package org.camunda.bpm.dmnsimulator;
+package org.camunda.bpm.dmntesting;
 
 import static org.camunda.spin.Spin.*;
 
@@ -52,7 +52,7 @@ public class EvaluateDecisionController {
 
 	@SuppressWarnings("unchecked")
 	@RequestMapping(method = RequestMethod.POST)
-	String evaluateDecicion(@RequestBody String reqBody, HttpServletResponse resp) {
+	String evaluateDecision(@RequestBody String reqBody, HttpServletResponse resp) {
 
 		log.debug("evaluateDecision called with requestBody:" + reqBody);
 

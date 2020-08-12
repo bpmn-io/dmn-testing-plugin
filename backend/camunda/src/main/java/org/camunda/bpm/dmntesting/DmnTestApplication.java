@@ -1,4 +1,4 @@
-package org.camunda.bpm.dmnsimulator;
+package org.camunda.bpm.dmntesting;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
