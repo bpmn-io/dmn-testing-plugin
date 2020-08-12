@@ -15,8 +15,17 @@ export default class ConfigModal extends React.PureComponent {
 
     const {
       closeModal,
-      evaluate
+      evaluate,
+      inputVariables
     } = this.props;
+
+    let initialValues = inputVariables || {
+      variables: [{
+        'name': 'varA',
+        'type': 'string',
+        'value': 'foobar'
+      }]
+    };
 
     const onClose = () => closeModal();
 
@@ -34,10 +43,7 @@ export default class ConfigModal extends React.PureComponent {
           <div>
             <h3>Variable inputs</h3>
             <Formik
-              initialValues={ { variables: [{
-                'name': 'varA',
-                'type': 'string',
-                'value': 'foobar' }] } }
+              initialValues={ initialValues }
               onSubmit={
                 values => {
                   onSubmit(values.variables);
