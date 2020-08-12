@@ -11,5 +11,5 @@
 module.exports = {
   script: './dist/client.js',
   style: './client/style.css',
-  name: 'autosave-plugin'
+  name: 'dmn-testing-plugin'
 };
