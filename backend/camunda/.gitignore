@@ -1,0 +1,15 @@
+target/
+.settings/
+.classpath
+.project
+.settings
+
+### IntelliJ IDEA ###
+.idea
+*.iws
+*.iml
+*.ipr
+
+
+.DS_Store
+
