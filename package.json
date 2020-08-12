@@ -1,0 +1,34 @@
+{
+  "name": "dmn-testing-plugin",
+  "version": "0.1.0",
+  "description": "Execute and test DMN decisions in Camunda Modeler",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/bpmn-io/dmn-testing-plugin"
+  },
+  "contributors": [
+    "Max Trumpf <maximilian.trumpf@camunda.com> (https://github.com/MaxTru",
+    "Maciej Barelkowski <maciej.barelkowski@camunda.com> (https://github.com/barmac)",
+    "Stefan Wiese <stefan.wiese@camunda.com> (https://github.com/McAlm)"
+  ],
+  "license": "MIT",
+  "scripts": {
+    "all": "run-s lint build",
+    "build": "webpack -c",
+    "dev": "webpack -c -w",
+    "lint": "eslint .",
+    "test": "echo \"no tests implemented\""
+  },
+  "devDependencies": {
+    "@babel/core": "^7.9.0",
+    "@babel/preset-react": "^7.9.4",
+    "babel-loader": "^8.1.0",
+    "camunda-modeler-plugin-helpers": "^3.4.0-alpha.0",
+    "eslint": "^6.8.0",
+    "eslint-plugin-bpmn-io": "^0.11.0",
+    "npm-run-all": "^4.1.5",
+    "webpack": "^4.42.1",
+    "webpack-cli": "^3.3.11"
+  }
+}
