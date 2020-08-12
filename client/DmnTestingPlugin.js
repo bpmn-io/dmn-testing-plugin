@@ -11,6 +11,7 @@
 /* eslint-disable no-unused-vars*/
 import React, { Fragment, PureComponent } from 'camunda-modeler-plugin-helpers/react';
 import { Fill } from 'camunda-modeler-plugin-helpers/components';
+import TestingModal from './TestingModal';
 
 export default class AutoSavePlugin extends PureComponent {
 
@@ -18,7 +19,8 @@ export default class AutoSavePlugin extends PureComponent {
     super(props);
 
     this.state = {
-      activeTab: null
+      activeTab: null,
+      modalOpen: false
     };
   }
 
@@ -64,10 +66,15 @@ export default class AutoSavePlugin extends PureComponent {
     // we can use fills to hook React components into certain places of the UI
     return (activeTab && activeTab.type === 'dmn') ? <Fragment>
       <Fill slot="toolbar" group="9_autoSave">
-        <button type="button">
-          Dmn Testing Plugin
+        <button type="button" onClick={ () => this.setState({ modalOpen: true }) }>
+          Dmn Testing Plugin!
         </button>
       </Fill>
+      { this.state.modalOpen &&(
+        <TestingModal
+          closeModal={ () => this.setState({ modalOpen: false }) }
+        />
+      )}
     </Fragment> : null;
   }
 }
