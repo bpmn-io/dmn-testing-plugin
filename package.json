@@ -18,7 +18,7 @@
     "build": "webpack -c",
     "dev": "webpack -c -w",
     "lint": "eslint .",
-    "test": "mocha client/*Spec.js"
+    "test": "mocha -r esm test/*Spec.js"
   },
   "devDependencies": {
     "@babel/core": "^7.9.0",
@@ -36,6 +36,7 @@
     "camunda-dmn-moddle": "^1.0.0",
     "chai": "^4.2.0",
     "dmn-moddle": "^9.1.0",
+    "esm": "^3.2.25",
     "formik": "^2.1.5",
     "min-dash": "^3.5.2",
     "mocha": "^8.1.1",

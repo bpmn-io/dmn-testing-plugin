@@ -1,18 +1,17 @@
-const fs = require('fs');
+import fs from 'fs';
 
-const getInputVariables = require('./InputVariableHelper').getInputVariables;
+import { getInputVariables } from '../client/InputVariableHelper';
 
-const DmnModdle = require('dmn-moddle');
+import DmnModdle from 'dmn-moddle';
 
-const chai = require('chai');
-const expect = chai.expect;
+import { expect } from 'chai';
 
 describe('getInputVariables', function() {
 
   it('should find all decisions', async function() {
 
     // given
-    const definitions = await read('client/InputVarExtractionTestDiagram.dmn');
+    const definitions = await read('./test/InputVarExtractionTestDiagram.dmn');
 
     // when
     const decisions = getInputVariables(definitions);
@@ -24,7 +23,7 @@ describe('getInputVariables', function() {
   it('should parse variable types and decision structure', async function() {
 
     // given
-    const definitions = await read('client/InputVarExtractionTestDiagram.dmn');
+    const definitions = await read('./test/InputVarExtractionTestDiagram.dmn');
 
     // when
     const decisions = getInputVariables(definitions);
@@ -34,6 +33,7 @@ describe('getInputVariables', function() {
     expect(decisions[0].variables[0]).to.include({ 'name': 'inputVar1', 'type': 'string' });
     expect(decisions[0].variables[1]).to.include({ 'name': 'inputVar2', 'type': 'boolean' });
     expect(decisions[0].variables[2]).to.include({ 'name': 'inputVar3', 'type': 'integer' });
+    console.log(decisions);
   });
 });
 
