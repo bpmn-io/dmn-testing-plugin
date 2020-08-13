@@ -3,9 +3,29 @@ import React from 'react';
 import { Formik, Form, Field, FieldArray } from 'formik';
 import { Modal } from 'camunda-modeler-plugin-helpers/components';
 
+// will be used for form initialization when no others are provided
+const DEFAULT_VARIABLES = [{
+  'decision': 'Example decision 1',
+  'variables': [ {
+    'name': 'Variable 1',
+    'type': 'boolean'
+  },
+  {
+    'name': 'Variable 2',
+    'type': 'string'
+  }]
+},
+{
+  'decision': 'Example decision 2',
+  'variables': [ {
+    'name': 'Variable 1',
+    'type': 'boolean'
+  }]
+}];
+
 
 // we can even use hooks to render into the application
-export default class TestingModal extends React.PureComponent {
+export default class ConfigModal extends React.PureComponent {
 
   constructor(props) {
     super(props);
@@ -19,13 +39,21 @@ export default class TestingModal extends React.PureComponent {
       inputVariables
     } = this.props;
 
-    let initialValues = inputVariables || {
-      variables: [{
-        'name': 'varA',
-        'type': 'string',
-        'value': 'foobar'
-      }]
-    };
+    const initialValues = inputVariables || DEFAULT_VARIABLES;
+
+    // flatten to make it easier to display and extend with own variables
+    // TODO: get rid of nested loop
+    let flattenedInitialValues = [];
+    initialValues.forEach(element => {
+      element.variables.forEach((variable) => {
+        flattenedInitialValues.push({
+          'decision': element.decision,
+          'name': variable.name,
+          'type': variable.type,
+          'value': ''
+        });
+      });
+    });
 
     const onClose = () => closeModal();
 
@@ -43,29 +71,30 @@ export default class TestingModal extends React.PureComponent {
           <div>
             <h3>Variable inputs</h3>
             <Formik
-              initialValues={ initialValues }
+              initialValues={ {
+                decisions: flattenedInitialValues
+              } }
               onSubmit={
                 values => {
-                  onSubmit(values.variables);
+                  onSubmit(values.decisions);
                 }
-
-                // values => console.log(values.variables)
               }
             >
               {({ values }) => (
                 <Form
                   id="dmnTestingInputVarsForm">
                   <FieldArray
-                    name="variables"
+                    name="decisions"
                     render={ arrayHelpers => (
                       <div>
-                        {values.variables && values.variables.length > 0 ? (
-                          values.variables.map((_, index) => (
+                        {values.decisions && values.decisions.length > 0 ? (
+                          values.decisions.map((_, index) => (
                             <div key={ index }>
-                              <Field name={ `variables.${index}.name` } />
-                              <Field name={ `variables.${index}.value` } />
-                              <Field name={ `variables.${index}.type` } component="select">
-                                <option value="">Select variable type</option>
+                              <Field name={ `decisions.${index}.decision` } disabled={ true } />
+                              <Field name={ `decisions.${index}.name` } />
+                              <Field name={ `decisions.${index}.value` } placeholder="<provide value>" />
+                              <Field name={ `decisions.${index}.type` } component="select">
+                                <option value="">Select type</option>
                                 <option value="string">string</option>
                                 <option value="integer">integer</option>
                                 <option value="boolean">boolean</option>
@@ -81,7 +110,7 @@ export default class TestingModal extends React.PureComponent {
                               </button>
                               <button
                                 type="button"
-                                onClick={ () => arrayHelpers.insert(index, '') }
+                                onClick={ () => arrayHelpers.insert(index + 1, '') }
                               >
                                 +
                               </button>
@@ -103,8 +132,8 @@ export default class TestingModal extends React.PureComponent {
 
         <Modal.Footer>
           <div id="autoSaveConfigButtons">
-            <button type="submit" className="btn btn-primary" form="dmnTestingInputVarsForm">Test</button>
-            <button type="button" className="btn btn-secondary" onClick={ () => onClose() }>Cancel</button>
+            <button type="submit" class="btn btn-primary" form="dmnTestingInputVarsForm">Test</button>
+            <button type="button" class="btn btn-secondary" onClick={ () => onClose() }>Cancel</button>
           </div>
         </Modal.Footer>
       </Modal>
