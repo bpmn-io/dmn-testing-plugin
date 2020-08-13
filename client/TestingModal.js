@@ -1,11 +1,13 @@
 /* eslint-disable no-unused-vars */
 import React from 'react';
 import { Formik, Form, Field, FieldArray } from 'formik';
+import DecisionsDropdown from './DecisionsDropdown';
 import { Modal } from 'camunda-modeler-plugin-helpers/components';
 
 // will be used for form initialization when no others are provided
 const DEFAULT_VARIABLES = [{
   'decision': 'Example decision 1',
+  'decisionId': 'Example decision 1',
   'variables': [ {
     'name': 'Variable 1',
     'type': 'boolean'
@@ -17,6 +19,7 @@ const DEFAULT_VARIABLES = [{
 },
 {
   'decision': 'Example decision 2',
+  'decisionId': 'Example decision 2',
   'variables': [ {
     'name': 'Variable 1',
     'type': 'boolean'
@@ -29,6 +32,10 @@ export default class ConfigModal extends React.PureComponent {
 
   constructor(props) {
     super(props);
+  }
+
+  updateDecision = () => {
+    this.setState({'decisionTaken': event.target.value});
   }
 
   render() {
@@ -57,7 +64,12 @@ export default class ConfigModal extends React.PureComponent {
 
     const onClose = () => closeModal();
 
-    const onSubmit = (variables) => evaluate(variables);
+    const onSubmit = (variables) => evaluate( {
+      variables: variables,
+      decision: this.state.takenDecision
+    });
+
+    const updateDecision = (val) => this.setState({ takenDecision: val});
 
     return (
       <Modal onClose={ onClose }>
@@ -69,6 +81,10 @@ export default class ConfigModal extends React.PureComponent {
         <Modal.Body>
 
           <div>
+          <h3>Decision to evaluate</h3>
+          <DecisionsDropdown
+            decisions={ initialValues.map(ele => ele.decisionId) } 
+            changeDecision={ (val) => updateDecision(val) }/>
             <h3>Variable inputs</h3>
             <Formik
               initialValues={ {
