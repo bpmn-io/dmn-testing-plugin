@@ -79,12 +79,6 @@
 			<artifactId>camunda-spin-dataformat-all</artifactId>
 		</dependency>
 
-		<dependency>
-			<groupId>io.prometheus</groupId>
-			<artifactId>simpleclient_spring_boot</artifactId>
-			<version>0.0.21</version>
-		</dependency>
-
 		<!-- https://mvnrepository.com/artifact/javax.xml/jaxb-api -->
 		<dependency>
 			<groupId>javax.xml</groupId>
@@ -92,27 +86,29 @@
 			<version>2.1</version>
 		</dependency>
 
-		<!-- https://mvnrepository.com/artifact/org.codehaus.groovy/groovy-all -->
-		<dependency>
-			<groupId>org.codehaus.groovy</groupId>
-			<artifactId>groovy-all</artifactId>
-			<version>3.0.3</version>
-			<type>pom</type>
-		</dependency>
+
+		<!-- R E M O V E D   D E P E N D E N C I E S   D U E   T O   F I L E S I Z E -->
+
+		<!-- https://mvnrepository.com/artifact/org.codehaus.groovy/groovy-jsr223 -->
+		<!-- <dependency> -->
+		<!-- <groupId>org.codehaus.groovy</groupId> -->
+		<!-- <artifactId>groovy-jsr223</artifactId> -->
+		<!-- </dependency> -->
+
 
 		<!-- https://mvnrepository.com/artifact/org.python/jython -->
-		<dependency>
-			<groupId>org.python</groupId>
-			<artifactId>jython</artifactId>
-			<version>2.7.2</version>
-		</dependency>
+		<!-- <dependency> -->
+		<!-- <groupId>org.python</groupId> -->
+		<!-- <artifactId>jython</artifactId> -->
+		<!-- <version>2.7.2</version> -->
+		<!-- </dependency> -->
 
 		<!-- https://mvnrepository.com/artifact/org.jruby/jruby-complete -->
-		<dependency>
-			<groupId>org.jruby</groupId>
-			<artifactId>jruby-complete</artifactId>
-			<version>9.2.12.0</version>
-		</dependency>
+		<!-- <dependency> -->
+		<!-- <groupId>org.jruby</groupId> -->
+		<!-- <artifactId>jruby</artifactId> -->
+		<!-- <version>9.2.12.0</version> -->
+		<!-- </dependency> -->
 
 	</dependencies>
 
