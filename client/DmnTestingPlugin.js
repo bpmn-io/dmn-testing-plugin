@@ -12,16 +12,20 @@
 import React, { Fragment, PureComponent } from 'camunda-modeler-plugin-helpers/react';
 import { Fill } from 'camunda-modeler-plugin-helpers/components';
 import TestingModal from './TestingModal';
+import { getInputVariables } from './InputVariableHelper';
+
 
 export default class DmnTestingPlugin extends PureComponent {
 
   constructor(props) {
     super(props);
 
+    this.modelersMap = new Map();
+
     this.state = {
       activeTab: null,
       modalOpen: false,
-      dmnInputVariables: {}
+      inputVariables: null
     };
   }
 
@@ -56,6 +60,14 @@ export default class DmnTestingPlugin extends PureComponent {
     subscribe('app.activeTabChanged', ({ activeTab }) => {
       this.setState({ activeTab });
     });
+
+    subscribe('dmn.modeler.created', ({ modeler, tab }) => {
+      if (this.modelersMap.has(tab)) {
+        return;
+      }
+
+      this.modelersMap.set(tab, modeler);
+    });
   }
 
   openModal = async () => {
@@ -66,7 +78,12 @@ export default class DmnTestingPlugin extends PureComponent {
       return;
     }
 
-    this.setState({ modalOpen: true });
+    const modeler = this.getModeler();
+    const definitions = modeler.getDefinitions();
+
+    const inputVariables = getInputVariables(definitions);
+
+    this.setState({ modalOpen: true, inputVariables });
   }
 
   saveActiveTab() {
@@ -78,8 +95,12 @@ export default class DmnTestingPlugin extends PureComponent {
     return triggerAction('save-tab', { tab: this.state.activeTab });
   }
 
+  getModeler() {
+    return this.modelersMap.get(this.state.activeTab);
+  }
+
   render() {
-    const { activeTab } = this.state;
+    const { activeTab, inputVariables, modalOpen } = this.state;
 
     // we can use fills to hook React components into certain places of the UI
     return (activeTab && activeTab.type === 'dmn') ? <Fragment>
@@ -88,9 +109,10 @@ export default class DmnTestingPlugin extends PureComponent {
           Dmn Testing Plugin!
         </button>
       </Fill>
-      { this.state.modalOpen && (
+      { modalOpen && (
         <TestingModal
           closeModal={ () => this.setState({ modalOpen: false }) }
+          inputVariables={ inputVariables }
           evaluate={ this.evaluateDmn }
         />
       )}

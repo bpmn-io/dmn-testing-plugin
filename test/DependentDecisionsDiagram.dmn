@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <definitions xmlns="https://www.omg.org/spec/DMN/20191111/MODEL/" xmlns:dmndi="https://www.omg.org/spec/DMN/20191111/DMNDI/" xmlns:dc="http://www.omg.org/spec/DMN/20180521/DC/" xmlns:di="http://www.omg.org/spec/DMN/20180521/DI/" id="drd" name="DRD" namespace="http://camunda.org/schema/1.0/dmn" exporter="Camunda Modeler" exporterVersion="4.2.0">
-  <decision id="decision_1" name="decision_1">
+  <decision id="decision_1" name="dish">
     <decisionTable id="DecisionTable_1y92klm">
       <input id="Input_1" label="inputVar1">
         <inputExpression id="InputExpression_1" typeRef="string">
@@ -20,24 +20,38 @@
       <output id="Output_1" typeRef="string" />
     </decisionTable>
   </decision>
-  <decision id="decision_2" name="decision_2">
+  <decision id="decision_with_downstream" name="decision_with_downstream">
     <informationRequirement id="InformationRequirement_14wcov7">
       <requiredInput href="#inputExpression_1" />
     </informationRequirement>
+    <informationRequirement id="InformationRequirement_0e36g5d">
+      <requiredDecision href="#decision_1" />
+    </informationRequirement>
+    <informationRequirement id="InformationRequirement_1r19oaa">
+      <requiredDecision href="#Decision_0ke7tnl" />
+    </informationRequirement>
     <decisionTable id="DecisionTable_17z2iwa">
-      <input id="InputClause_0borpim" label="inputVar1">
+      <input id="InputClause_0borpim" label="dish">
         <inputExpression id="LiteralExpression_0k1cwy1" typeRef="string" />
       </input>
       <output id="OutputClause_0tudwtw" typeRef="string" />
     </decisionTable>
   </decision>
   <inputData id="inputExpression_1" name="inputExpression_1" />
+  <decision id="Decision_0ke7tnl" name="beverage">
+    <decisionTable id="DecisionTable_0upbiy0">
+      <input id="InputClause_1maoxwi" label="asdf">
+        <inputExpression id="LiteralExpression_1s8vx4g" typeRef="string" />
+      </input>
+      <output id="OutputClause_18x6ck7" typeRef="string" />
+    </decisionTable>
+  </decision>
   <dmndi:DMNDI>
     <dmndi:DMNDiagram>
       <dmndi:DMNShape dmnElementRef="decision_1">
         <dc:Bounds height="80" width="180" x="160" y="260" />
       </dmndi:DMNShape>
-      <dmndi:DMNShape id="DMNShape_02smhcf" dmnElementRef="decision_2">
+      <dmndi:DMNShape id="DMNShape_02smhcf" dmnElementRef="decision_with_downstream">
         <dc:Bounds height="80" width="180" x="360" y="80" />
       </dmndi:DMNShape>
       <dmndi:DMNShape id="DMNShape_0yd7xmy" dmnElementRef="inputExpression_1">
@@ -47,6 +61,19 @@
         <di:waypoint x="540" y="277" />
         <di:waypoint x="450" y="180" />
         <di:waypoint x="450" y="160" />
+      </dmndi:DMNEdge>
+      <dmndi:DMNEdge id="DMNEdge_0a3wtni" dmnElementRef="InformationRequirement_0e36g5d">
+        <di:waypoint x="250" y="260" />
+        <di:waypoint x="405" y="180" />
+        <di:waypoint x="405" y="160" />
+      </dmndi:DMNEdge>
+      <dmndi:DMNShape id="DMNShape_0c0rno5" dmnElementRef="Decision_0ke7tnl">
+        <dc:Bounds height="80" width="180" x="690" y="260" />
+      </dmndi:DMNShape>
+      <dmndi:DMNEdge id="DMNEdge_1v4rbz7" dmnElementRef="InformationRequirement_1r19oaa">
+        <di:waypoint x="780" y="260" />
+        <di:waypoint x="495" y="180" />
+        <di:waypoint x="495" y="160" />
       </dmndi:DMNEdge>
     </dmndi:DMNDiagram>
   </dmndi:DMNDI>

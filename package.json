@@ -35,6 +35,7 @@
   "dependencies": {
     "camunda-dmn-moddle": "^1.0.0",
     "chai": "^4.2.0",
+    "dmn-js-shared": "^9.2.0",
     "dmn-moddle": "^9.1.0",
     "esm": "^3.2.25",
     "formik": "^2.1.5",
