@@ -14,6 +14,8 @@ import { Fill } from 'camunda-modeler-plugin-helpers/components';
 import TestingModal from './TestingModal';
 import { getInputVariables } from './InputVariableHelper';
 
+const EVALUATE_DECISION_ENDPOINT = 'http://localhost:9999/evaluateDecision';
+
 
 export default class DmnTestingPlugin extends PureComponent {
 
@@ -25,20 +27,56 @@ export default class DmnTestingPlugin extends PureComponent {
     this.state = {
       activeTab: null,
       modalOpen: false,
-      inputVariables: null
+      decisions: null
     };
   }
 
-  evaluateDmn = async inputVariables => {
+  evaluateDmn = async ({ decision, variables }) => {
+
     const { activeTab } = this.state;
 
     const xml = activeTab.file.contents;
+    const payload = {
+      decision: decision.decisionId,
+      xml,
+      variables: {}
+    };
+    const headers = {
+      accept: 'application/json'
+    };
 
-    console.log('Now send to DMN engine and retrieve results');
-    console.log(inputVariables);
-    console.log(xml);
+    for (const { name, type, value } of variables) {
+      payload.variables[name] = { type, value };
 
-    // TODO
+      // cast types when required
+      if (type === 'boolean') {
+        payload.variables[name].value = Boolean(value);
+      } else if ([ 'integer', 'long', 'double' ].includes(type)) {
+        payload.variables[name].value = Number(value);
+      }
+    }
+
+    try {
+      const res = await fetch(EVALUATE_DECISION_ENDPOINT, {
+        method: 'POST',
+        headers,
+        body: JSON.stringify(payload)
+      });
+
+      if (!res.ok) {
+        throw new Error(`${res.status} ${res.statusText}`);
+      }
+
+      const body = await res.json();
+
+      if (body.error) {
+        throw new Error(body.error);
+      }
+
+      console.log('evaluated successfully', body);
+    } catch (error) {
+      console.error('unable to evaluate decision: ', error, error.response);
+    }
   }
 
   componentDidMount() {
@@ -81,9 +119,9 @@ export default class DmnTestingPlugin extends PureComponent {
     const modeler = this.getModeler();
     const definitions = modeler.getDefinitions();
 
-    const inputVariables = getInputVariables(definitions);
+    const decisions = getInputVariables(definitions);
 
-    this.setState({ modalOpen: true, inputVariables });
+    this.setState({ modalOpen: true, decisions });
   }
 
   saveActiveTab() {
@@ -100,7 +138,7 @@ export default class DmnTestingPlugin extends PureComponent {
   }
 
   render() {
-    const { activeTab, inputVariables, modalOpen } = this.state;
+    const { activeTab, decisions, modalOpen } = this.state;
 
     // we can use fills to hook React components into certain places of the UI
     return (activeTab && activeTab.type === 'dmn') ? <Fragment>
@@ -112,7 +150,8 @@ export default class DmnTestingPlugin extends PureComponent {
       { modalOpen && (
         <TestingModal
           closeModal={ () => this.setState({ modalOpen: false }) }
-          inputVariables={ inputVariables }
+          decisions={ decisions }
+          initiallySelectedDecision={ decisions[0] }
           evaluate={ this.evaluateDmn }
         />
       )}

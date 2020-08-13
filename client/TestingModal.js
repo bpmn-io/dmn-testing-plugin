@@ -4,72 +4,54 @@ import { Formik, Form, Field, FieldArray } from 'formik';
 import DecisionsDropdown from './DecisionsDropdown';
 import { Modal } from 'camunda-modeler-plugin-helpers/components';
 
-// will be used for form initialization when no others are provided
-const DEFAULT_VARIABLES = [{
-  'decision': 'Example decision 1',
-  'decisionId': 'Example decision 1',
-  'variables': [ {
-    'name': 'Variable 1',
-    'type': 'boolean'
-  },
-  {
-    'name': 'Variable 2',
-    'type': 'string'
-  }]
-},
-{
-  'decision': 'Example decision 2',
-  'decisionId': 'Example decision 2',
-  'variables': [ {
-    'name': 'Variable 1',
-    'type': 'boolean'
-  }]
-}];
-
 
 // we can even use hooks to render into the application
 export default class ConfigModal extends React.PureComponent {
 
   constructor(props) {
     super(props);
+
+    this.state = {
+      decisionTaken: props.decisions[0]
+    };
   }
 
-  updateDecision = () => {
-    this.setState({'decisionTaken': event.target.value});
+  updateDecision = value => {
+    this.setState({ decisionTaken: value });
+  }
+
+  handleSubmit = values => {
+    this.props.evaluate({
+      variables: values.variables,
+      decision: this.state.decisionTaken
+    });
   }
 
   render() {
 
     const {
       closeModal,
-      evaluate,
-      inputVariables
+      decisions,
+      initiallySelectedDecision
     } = this.props;
 
-    const initialValues = inputVariables || DEFAULT_VARIABLES;
+    const {
+      decisionTaken = initiallySelectedDecision
+    } = this.state;
 
     // flatten to make it easier to display and extend with own variables
     // TODO: get rid of nested loop
-    let flattenedInitialValues = [];
-    initialValues.forEach(element => {
-      element.variables.forEach((variable) => {
-        flattenedInitialValues.push({
-          'decision': element.decision,
-          'name': variable.name,
-          'type': variable.type,
-          'value': ''
-        });
-      });
+    const inputVariables = decisions.flatMap(decision => {
+      return decision.variables.map(variable => ({
+        decision: decision.decision,
+        name: variable.name,
+        type: variable.type,
+        value: ''
+      }));
     });
+    const initialValues = { variables: inputVariables };
 
     const onClose = () => closeModal();
-
-    const onSubmit = (variables) => evaluate( {
-      variables: variables,
-      decision: this.state.takenDecision
-    });
-
-    const updateDecision = (val) => this.setState({ takenDecision: val});
 
     return (
       <Modal onClose={ onClose }>
@@ -81,35 +63,32 @@ export default class ConfigModal extends React.PureComponent {
         <Modal.Body>
 
           <div>
-          <h3>Decision to evaluate</h3>
-          <DecisionsDropdown
-            decisions={ initialValues.map(ele => ele.decisionId) } 
-            changeDecision={ (val) => updateDecision(val) }/>
+            <h3>Decision to evaluate</h3>
+            <DecisionsDropdown
+              selected={ decisionTaken }
+              decisions={ decisions }
+              onDecisionChanged={ this.updateDecision }
+            />
+
             <h3>Variable inputs</h3>
             <Formik
-              initialValues={ {
-                decisions: flattenedInitialValues
-              } }
-              onSubmit={
-                values => {
-                  onSubmit(values.decisions);
-                }
-              }
+              initialValues={ initialValues }
+              onSubmit={ this.handleSubmit }
             >
               {({ values }) => (
                 <Form
                   id="dmnTestingInputVarsForm">
                   <FieldArray
-                    name="decisions"
+                    name="variables"
                     render={ arrayHelpers => (
                       <div>
-                        {values.decisions && values.decisions.length > 0 ? (
-                          values.decisions.map((_, index) => (
+                        {values.variables && values.variables.length > 0 ? (
+                          values.variables.map((_, index) => (
                             <div key={ index }>
-                              <Field name={ `decisions.${index}.decision` } disabled={ true } />
-                              <Field name={ `decisions.${index}.name` } />
-                              <Field name={ `decisions.${index}.value` } placeholder="<provide value>" />
-                              <Field name={ `decisions.${index}.type` } component="select">
+                              <Field name={ `variables.${index}.decision` } disabled={ true } />
+                              <Field name={ `variables.${index}.name` } />
+                              <Field name={ `variables.${index}.value` } placeholder="<provide value>" />
+                              <Field name={ `variables.${index}.type` } component="select">
                                 <option value="">Select type</option>
                                 <option value="string">string</option>
                                 <option value="integer">integer</option>
