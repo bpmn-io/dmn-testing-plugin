@@ -1,11 +1,11 @@
 /* eslint-disable no-unused-vars */
-import React, { Fragment } from 'react';
+import React from 'react';
 import { Formik, Form, Field, FieldArray } from 'formik';
 import { Modal } from 'camunda-modeler-plugin-helpers/components';
 
 
 // we can even use hooks to render into the application
-export default class ConfigModal extends React.PureComponent {
+export default class TestingModal extends React.PureComponent {
 
   constructor(props) {
     super(props);
@@ -51,7 +51,8 @@ export default class ConfigModal extends React.PureComponent {
 
                 // values => console.log(values.variables)
               }
-              render={ ({ values }) => (
+            >
+              {({ values }) => (
                 <Form
                   id="dmnTestingInputVarsForm">
                   <FieldArray
@@ -95,16 +96,15 @@ export default class ConfigModal extends React.PureComponent {
                     ) }
                   />
                 </Form>
-              ) }
-            />
-
+              )}
+            </Formik>
           </div>
         </Modal.Body>
 
         <Modal.Footer>
           <div id="autoSaveConfigButtons">
-            <button type="submit" class="btn btn-primary" form="dmnTestingInputVarsForm">Test</button>
-            <button type="button" class="btn btn-secondary" onClick={ () => onClose() }>Cancel</button>
+            <button type="submit" className="btn btn-primary" form="dmnTestingInputVarsForm">Test</button>
+            <button type="button" className="btn btn-secondary" onClick={ () => onClose() }>Cancel</button>
           </div>
         </Modal.Footer>
       </Modal>

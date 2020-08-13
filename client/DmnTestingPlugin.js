@@ -13,7 +13,7 @@ import React, { Fragment, PureComponent } from 'camunda-modeler-plugin-helpers/r
 import { Fill } from 'camunda-modeler-plugin-helpers/components';
 import TestingModal from './TestingModal';
 
-export default class AutoSavePlugin extends PureComponent {
+export default class DmnTestingPlugin extends PureComponent {
 
   constructor(props) {
     super(props);
