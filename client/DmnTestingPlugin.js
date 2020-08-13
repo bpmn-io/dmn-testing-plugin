@@ -12,6 +12,14 @@
 import React, { Fragment, PureComponent } from 'camunda-modeler-plugin-helpers/react';
 import { Fill } from 'camunda-modeler-plugin-helpers/components';
 import TestingModal from './TestingModal';
+import DmnJsBridge from './DmnJsBridge';
+import { getInputVariables } from './InputVariableHelper';
+
+
+const bridgeModule = {
+  __init__: [ 'dmnJsBridge' ],
+  dmnJsBridge: [ 'factory', DmnJsBridge ]
+};
 
 export default class DmnTestingPlugin extends PureComponent {
 
@@ -21,7 +29,7 @@ export default class DmnTestingPlugin extends PureComponent {
     this.state = {
       activeTab: null,
       modalOpen: false,
-      dmnInputVariables: {}
+      inputVariables: null
     };
   }
 
@@ -56,6 +64,15 @@ export default class DmnTestingPlugin extends PureComponent {
     subscribe('app.activeTabChanged', ({ activeTab }) => {
       this.setState({ activeTab });
     });
+
+    subscribe('dmn.modeler.configure', ({ middlewares }) => {
+
+      const providedMiddlewares = [ 'drd', 'decisionTable', 'literalExpression' ].map(component => {
+        return additionalModulesMiddleware(component, bridgeModule);
+      });
+
+      middlewares.push(...providedMiddlewares);
+    });
   }
 
   openModal = async () => {
@@ -66,7 +83,12 @@ export default class DmnTestingPlugin extends PureComponent {
       return;
     }
 
-    this.setState({ modalOpen: true });
+    const bridge = DmnJsBridge.getInstance();
+    const definitions = bridge.getRoot();
+
+    const inputVariables = getInputVariables(definitions);
+
+    this.setState({ modalOpen: true, inputVariables });
   }
 
   saveActiveTab() {
@@ -79,7 +101,7 @@ export default class DmnTestingPlugin extends PureComponent {
   }
 
   render() {
-    const { activeTab } = this.state;
+    const { activeTab, inputVariables, modalOpen } = this.state;
 
     // we can use fills to hook React components into certain places of the UI
     return (activeTab && activeTab.type === 'dmn') ? <Fragment>
@@ -88,12 +110,36 @@ export default class DmnTestingPlugin extends PureComponent {
           Dmn Testing Plugin!
         </button>
       </Fill>
-      { this.state.modalOpen && (
+      { modalOpen && (
         <TestingModal
           closeModal={ () => this.setState({ modalOpen: false }) }
+          inputVariables={ inputVariables }
           evaluate={ this.evaluateDmn }
         />
       )}
     </Fragment> : null;
   }
+}
+
+
+/**
+ * Middleware helper to provide selected module to dmn-js.
+ * https://github.com/camunda/camunda-modeler/blob/316fcdf0d6ef87bd539e2f457a159f80658b25bf/client/src/app/tabs/dmn/util/configure.js#L26
+ *
+ * @param {'drd'|'decisionTable'|'literalExpression'} component
+ * @param {*} module
+ */
+function additionalModulesMiddleware(component, module) {
+  return function(options) {
+    return {
+      ...options,
+      [component]: {
+        ...options[component],
+        additionalModules: [
+          ...((options[component] || {}).additionalModules || []),
+          module
+        ]
+      }
+    };
+  };
 }
