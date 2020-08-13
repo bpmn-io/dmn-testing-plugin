@@ -38,9 +38,10 @@
     "dmn-js-shared": "^9.2.0",
     "dmn-moddle": "^9.1.0",
     "esm": "^3.2.25",
+    "execa": "^4.0.3",
     "formik": "^2.1.5",
     "min-dash": "^3.5.2",
     "mocha": "^8.1.1",
-    "run-camunda": "^5.0.0"
+    "which": "^2.0.2"
   }
 }
