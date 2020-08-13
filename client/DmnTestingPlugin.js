@@ -12,19 +12,15 @@
 import React, { Fragment, PureComponent } from 'camunda-modeler-plugin-helpers/react';
 import { Fill } from 'camunda-modeler-plugin-helpers/components';
 import TestingModal from './TestingModal';
-import DmnJsBridge from './DmnJsBridge';
 import { getInputVariables } from './InputVariableHelper';
 
-
-const bridgeModule = {
-  __init__: [ 'dmnJsBridge' ],
-  dmnJsBridge: [ 'factory', DmnJsBridge ]
-};
 
 export default class DmnTestingPlugin extends PureComponent {
 
   constructor(props) {
     super(props);
+
+    this.modelersMap = new Map();
 
     this.state = {
       activeTab: null,
@@ -65,13 +61,12 @@ export default class DmnTestingPlugin extends PureComponent {
       this.setState({ activeTab });
     });
 
-    subscribe('dmn.modeler.configure', ({ middlewares }) => {
+    subscribe('dmn.modeler.created', ({ modeler, tab }) => {
+      if (this.modelersMap.has(tab)) {
+        return;
+      }
 
-      const providedMiddlewares = [ 'drd', 'decisionTable', 'literalExpression' ].map(component => {
-        return additionalModulesMiddleware(component, bridgeModule);
-      });
-
-      middlewares.push(...providedMiddlewares);
+      this.modelersMap.set(tab, modeler);
     });
   }
 
@@ -83,8 +78,8 @@ export default class DmnTestingPlugin extends PureComponent {
       return;
     }
 
-    const bridge = DmnJsBridge.getInstance();
-    const definitions = bridge.getRoot();
+    const modeler = this.getModeler();
+    const definitions = modeler.getDefinitions();
 
     const inputVariables = getInputVariables(definitions);
 
@@ -98,6 +93,10 @@ export default class DmnTestingPlugin extends PureComponent {
 
     // trigger a tab save operation
     return triggerAction('save-tab', { tab: this.state.activeTab });
+  }
+
+  getModeler() {
+    return this.modelersMap.get(this.state.activeTab);
   }
 
   render() {
@@ -119,27 +118,4 @@ export default class DmnTestingPlugin extends PureComponent {
       )}
     </Fragment> : null;
   }
-}
-
-
-/**
- * Middleware helper to provide selected module to dmn-js.
- * https://github.com/camunda/camunda-modeler/blob/316fcdf0d6ef87bd539e2f457a159f80658b25bf/client/src/app/tabs/dmn/util/configure.js#L26
- *
- * @param {'drd'|'decisionTable'|'literalExpression'} component
- * @param {*} module
- */
-function additionalModulesMiddleware(component, module) {
-  return function(options) {
-    return {
-      ...options,
-      [component]: {
-        ...options[component],
-        additionalModules: [
-          ...((options[component] || {}).additionalModules || []),
-          module
-        ]
-      }
-    };
-  };
 }
