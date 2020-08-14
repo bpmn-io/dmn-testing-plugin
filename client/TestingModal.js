@@ -41,15 +41,20 @@ export default class ConfigModal extends React.PureComponent {
 
     // flatten to make it easier to display and extend with own variables
     // TODO: get rid of nested loop
-    const inputVariables = decisions.flatMap(decision => {
+    const allInputVariables = decisions.flatMap(decision => {
       return decision.variables.map(variable => ({
         decision: decision.decision,
+        decisionId: decision.decisionId,
         name: variable.expression,
         type: variable.type,
         value: ''
       }));
     });
-    const initialValues = { variables: inputVariables };
+    const allowedDecisions = [ decisionTaken.decisionId, ...decisionTaken.downstreamDecisions ];
+    const filteredInputVariables = allInputVariables.filter(
+      variable => allowedDecisions.includes(variable.decisionId)
+    );
+    const initialValues = { variables: filteredInputVariables };
 
     const onClose = () => closeModal();
 
@@ -72,6 +77,7 @@ export default class ConfigModal extends React.PureComponent {
 
             <h3>Variable inputs</h3>
             <Formik
+              enableReinitialize
               initialValues={ initialValues }
               onSubmit={ this.handleSubmit }
             >
