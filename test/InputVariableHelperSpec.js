@@ -37,7 +37,7 @@ describe('getInputVariables', function() {
   });
 
 
-  it('should parse downstream decisions with depth = 1', async function() {
+  it('should parse downstream decisions', async function() {
 
     // given
     const definitions = await read('./test/DependentDecisionsDiagram.dmn');
@@ -46,8 +46,8 @@ describe('getInputVariables', function() {
     const decisions = getInputVariables(definitions);
 
     // then
-    expect(decisions.length).to.be.equal(3);
-    expect(decisions[1].downstreamDecisions.length).to.equal(2);
+    expect(decisions.length).to.be.equal(7);
+    expect(decisions[1].downstreamDecisions.length).to.equal(6);
     expect(decisions[1].downstreamDecisions[0]).to.equal('decision_1');
   });
 

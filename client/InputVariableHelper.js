@@ -49,21 +49,46 @@ function getDecisions(container) {
 /**
  * @param {Array<ModdleElement>} decisions an array of ModdleElements representing dmn decisions
  * 
- * @returns {Array<String>} an array of strings, each referncing the respective downstream decision (by id)
+ * @returns {DownstreamDecisionsObject} an object which represents a map of decision.id : [<string>downstreamDecisionIds]
  */
 function getDownstreamDecisions(decisions) {
-  let downstreamDecisions = { };
-  // TODO implement as more performant for loop
+  // (1) create a simple dependency map
+  let downstreamDecisionMap = { };
+
   decisions.forEach(decision => {
-    downstreamDecisions[decision.id] = (
-      decision.informationRequirement && 
+    let downstreamDecisions = (decision.informationRequirement && 
       decision.informationRequirement.length > 0 &&
       decision.informationRequirement.filter(infoReq => infoReq.requiredDecision).length > 0) ? 
       decision.informationRequirement.filter(infoReq => infoReq.requiredDecision)
         .map(infoReq => infoReq.requiredDecision.href.slice(1)) : 
     [];
+
+    downstreamDecisionMap[decision.id] = downstreamDecisions;
   });
-  return downstreamDecisions;
+
+  // (2) get the transient dependencies
+  for (const decId in downstreamDecisionMap) {
+    downstreamDecisionMap[decId] = getTransientDecIds(decId, downstreamDecisionMap).filter(uniqueFilter);
+  }
+
+  // (3) return result
+  return downstreamDecisionMap;
+
+  // helpers //////////
+
+  function getTransientDecIds(decId, downstreamDecisionMap) {
+    if(downstreamDecisionMap[decId] === undefined || downstreamDecisionMap[decId].length == 0) {
+      return []
+    } else {
+      return downstreamDecisionMap[decId]
+        .concat(downstreamDecisionMap[decId]
+          .map(transId => getTransientDecIds(transId, downstreamDecisionMap))).flat();
+    }
+  }
+
+  function uniqueFilter(element, index, array) {
+    return array.indexOf(element) === index;
+  }
 }
 
 /**
@@ -71,7 +96,7 @@ function getDownstreamDecisions(decisions) {
  * @param {ModdleElement} input is a moddle element representing a DMN decision input
  * @param {Array<ModdleElement>} decisions an array of moddle element, each representing a DMN decision
  * 
- * @returns {Boolean} will return a boolean indicating whether the input expression is also used as an output in one of the decisions
+ * @returns {boolean} will return a boolean indicating whether the input expression is also used as an output in one of the decisions
  */
 function isOutput(input, decisions) {
   if(input && 
@@ -89,7 +114,7 @@ function isOutput(input, decisions) {
  * 
  * @param {Array<ModdleElement>} decisions an array of moddle element, each representing a DMN decision
  * 
- * @returns {Array<String>} an array of strings, each the name of an output Expressions
+ * @returns {Array<string>} an array of strings, each the name of an output Expressions
  */
 function getOutputExpressions(decisions) {
   const outputClauses = decisions.map(dec => dec.decisionLogic.output).flat();
