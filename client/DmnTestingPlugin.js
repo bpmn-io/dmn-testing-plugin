@@ -169,7 +169,7 @@ export default class DmnTestingPlugin extends PureComponent {
     return (activeTab && activeTab.type === 'dmn') ? <Fragment>
       <Fill slot="toolbar" group="9_autoSave">
         <button type="button" onClick={ this.openModal }>
-          Dmn Testing Plugin!
+          DMN Testing
         </button>
       </Fill>
       {

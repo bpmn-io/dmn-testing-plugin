@@ -7,6 +7,7 @@ import { is } from 'dmn-js-shared/lib/util/ModelUtil';
  * @returns {Array<decisions>}
  */
 export function getInputVariables(container) {
+
   // (1) get decisions
   const decisions = getDecisions(container);
 
@@ -24,7 +25,7 @@ export function getInputVariables(container) {
             'name': input.label,
             'type': input.inputExpression.typeRef,
             'expression': input.inputExpression.text
-          }
+          };
         }),
       'downstreamDecisions': downstreamDecisions[decision.id]
     };
@@ -34,34 +35,35 @@ export function getInputVariables(container) {
 }
 
 /**
- * 
+ *
  * @param {ModdleElement} container is the root element from where to extract the decisions from
- * 
+ *
  * @returns {Array<decisions>} an array of moddle decision elements
  */
 function getDecisions(container) {
-  return container.drgElement.filter((element) => 
-    element && 
-    element.$type === 'dmn:Decision' 
+  return container.drgElement.filter((element) =>
+    element &&
+    element.$type === 'dmn:Decision'
     && is(element.decisionLogic, 'dmn:DecisionTable'));
 }
 
 /**
  * @param {Array<ModdleElement>} decisions an array of ModdleElements representing dmn decisions
- * 
+ *
  * @returns {DownstreamDecisionsObject} an object which represents a map of decision.id : [<string>downstreamDecisionIds]
  */
 function getDownstreamDecisions(decisions) {
+
   // (1) create a simple dependency map
   let downstreamDecisionMap = { };
 
   decisions.forEach(decision => {
-    let downstreamDecisions = (decision.informationRequirement && 
+    let downstreamDecisions = (decision.informationRequirement &&
       decision.informationRequirement.length > 0 &&
-      decision.informationRequirement.filter(infoReq => infoReq.requiredDecision).length > 0) ? 
+      decision.informationRequirement.filter(infoReq => infoReq.requiredDecision).length > 0) ?
       decision.informationRequirement.filter(infoReq => infoReq.requiredDecision)
-        .map(infoReq => infoReq.requiredDecision.href.slice(1)) : 
-    [];
+        .map(infoReq => infoReq.requiredDecision.href.slice(1)) :
+      [];
 
     downstreamDecisionMap[decision.id] = downstreamDecisions;
   });
@@ -77,8 +79,8 @@ function getDownstreamDecisions(decisions) {
   // helpers //////////
 
   function getTransientDecIds(decId, downstreamDecisionMap) {
-    if(downstreamDecisionMap[decId] === undefined || downstreamDecisionMap[decId].length == 0) {
-      return []
+    if (downstreamDecisionMap[decId] === undefined || downstreamDecisionMap[decId].length == 0) {
+      return [];
     } else {
       return downstreamDecisionMap[decId]
         .concat(downstreamDecisionMap[decId]
@@ -92,28 +94,28 @@ function getDownstreamDecisions(decisions) {
 }
 
 /**
- * 
+ *
  * @param {ModdleElement} input is a moddle element representing a DMN decision input
  * @param {Array<ModdleElement>} decisions an array of moddle element, each representing a DMN decision
- * 
+ *
  * @returns {boolean} will return a boolean indicating whether the input expression is also used as an output in one of the decisions
  */
 function isOutput(input, decisions) {
-  if(input && 
-    input.inputExpression && 
+  if (input &&
+    input.inputExpression &&
     input.inputExpression.text) {
-        const inputExp = input.inputExpression.text;
-        const outputExpressions = getOutputExpressions(decisions);
-        return outputExpressions.includes(inputExp) ? true : false;
+    const inputExp = input.inputExpression.text;
+    const outputExpressions = getOutputExpressions(decisions);
+    return outputExpressions.includes(inputExp) ? true : false;
   } else {
     return false;
   }
 }
 
 /**
- * 
+ *
  * @param {Array<ModdleElement>} decisions an array of moddle element, each representing a DMN decision
- * 
+ *
  * @returns {Array<string>} an array of strings, each the name of an output Expressions
  */
 function getOutputExpressions(decisions) {

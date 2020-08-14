@@ -1,4 +1,4 @@
-import React, { Fragment } from 'react';
+import React, { Fragment } from 'react'; // eslint-disable-line no-unused-vars
 import { Modal } from 'camunda-modeler-plugin-helpers/components';
 
 

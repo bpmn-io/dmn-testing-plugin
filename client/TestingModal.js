@@ -1,5 +1,4 @@
-/* eslint-disable no-unused-vars */
-import React from 'react';
+import React from 'react'; // eslint-disable-line no-unused-vars
 import { Formik, Form, Field, FieldArray } from 'formik';
 import DecisionsDropdown from './DecisionsDropdown';
 import { Modal } from 'camunda-modeler-plugin-helpers/components';

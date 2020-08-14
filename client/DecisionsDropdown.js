@@ -1,4 +1,4 @@
-import React from 'react';
+import React from 'react'; // eslint-disable-line no-unused-vars
 
 // we can even use hooks to render into the application
 export default function DecisionsDropdown(props) {
