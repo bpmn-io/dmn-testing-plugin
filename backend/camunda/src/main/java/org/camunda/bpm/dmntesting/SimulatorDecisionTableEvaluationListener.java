@@ -19,8 +19,10 @@ import java.util.List;
 import org.camunda.bpm.dmn.engine.delegate.DmnDecisionTableEvaluationEvent;
 import org.camunda.bpm.dmn.engine.delegate.DmnDecisionTableEvaluationListener;
 import org.springframework.stereotype.Component;
+import org.springframework.web.context.annotation.RequestScope;
 
 @Component
+@RequestScope
 public class SimulatorDecisionTableEvaluationListener implements DmnDecisionTableEvaluationListener {
 
 	protected DmnDecisionTableEvaluationEvent lastEvent;
