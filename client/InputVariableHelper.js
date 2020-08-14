@@ -2,19 +2,56 @@ import { is } from 'dmn-js-shared/lib/util/ModelUtil';
 
 /**
  *
- * @param {ModdleElement} moddle root element from where to extract the input variables
+ * @param {ModdleElement} container is the root element from where to extract the input variables
  *
  * @returns {Array<decisions>}
  */
 export function getInputVariables(container) {
-
   // (1) get decisions
-  const decisions = container.drgElement.filter((element) => 
+  const decisions = getDecisions(container);
+
+  // (2) get downstream decisions
+  const downstreamDecisions = getDownstreamDecisions(decisions);
+
+  // (3) for each decision, map name, variables and their types. Also add the downstream decisions
+  const result = decisions.map((decision) => {
+    return {
+      'decision': decision.name,
+      'decisionId': decision.id,
+      'variables': decision.decisionLogic.input.filter(input => !isOutput(input, decisions))
+        .map((input) => {
+          return {
+            'name': input.label,
+            'type': input.inputExpression.typeRef,
+            'expression': input.inputExpression.text
+          }
+        }),
+      'downstreamDecisions': downstreamDecisions[decision.id]
+    };
+  });
+
+  return result;
+}
+
+/**
+ * 
+ * @param {ModdleElement} container is the root element from where to extract the decisions from
+ * 
+ * @returns {Array<decisions>} an array of moddle decision elements
+ */
+function getDecisions(container) {
+  return container.drgElement.filter((element) => 
     element && 
     element.$type === 'dmn:Decision' 
     && is(element.decisionLogic, 'dmn:DecisionTable'));
+}
 
-  // (2) get decisions dependencies as map with depth = 1
+/**
+ * @param {Array<ModdleElement>} decisions an array of ModdleElements representing dmn decisions
+ * 
+ * @returns {Array<String>} an array of strings, each referncing the respective downstream decision (by id)
+ */
+function getDownstreamDecisions(decisions) {
   let downstreamDecisions = { };
   // TODO implement as more performant for loop
   decisions.forEach(decision => {
@@ -26,22 +63,35 @@ export function getInputVariables(container) {
         .map(infoReq => infoReq.requiredDecision.href.slice(1)) : 
     [];
   });
+  return downstreamDecisions;
+}
 
-  // (3) for each decision, map name, variables and their types. Also add the downstream decisions
-  const result = decisions.map((decision) => {
-    const { decisionLogic } = decision;
-    return {
-      'decision': decision.name,
-      'decisionId': decision.id,
-      'variables': decision.decisionLogic.input.map((input) => {
-        return {
-          'name': input.label,
-          'type': input.inputExpression.typeRef
-        }
-      }),
-      'downstreamDecisions': downstreamDecisions[decision.id]
-    };
-  });
+/**
+ * 
+ * @param {ModdleElement} input is a moddle element representing a DMN decision input
+ * @param {Array<ModdleElement>} decisions an array of moddle element, each representing a DMN decision
+ * 
+ * @returns {Boolean} will return a boolean indicating whether the input expression is also used as an output in one of the decisions
+ */
+function isOutput(input, decisions) {
+  if(input && 
+    input.inputExpression && 
+    input.inputExpression.text) {
+        const inputExp = input.inputExpression.text;
+        const outputExpressions = getOutputExpressions(decisions);
+        return outputExpressions.includes(inputExp) ? true : false;
+  } else {
+    return false;
+  }
+}
 
-  return result;
+/**
+ * 
+ * @param {Array<ModdleElement>} decisions an array of moddle element, each representing a DMN decision
+ * 
+ * @returns {Array<String>} an array of strings, each the name of an output Expressions
+ */
+function getOutputExpressions(decisions) {
+  const outputClauses = decisions.map(dec => dec.decisionLogic.output).flat();
+  return outputClauses.filter(clause => clause.name).map(clause => clause.name);
 }

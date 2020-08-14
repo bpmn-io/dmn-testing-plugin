@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="https://www.omg.org/spec/DMN/20191111/MODEL/" xmlns:dmndi="https://www.omg.org/spec/DMN/20191111/DMNDI/" xmlns:dc="http://www.omg.org/spec/DMN/20180521/DC/" xmlns:di="http://www.omg.org/spec/DMN/20180521/DI/" id="Definitions_07mb5mj" name="DRD" namespace="http://camunda.org/schema/1.0/dmn" exporter="Camunda Modeler" exporterVersion="4.2.0">
+  <decision id="Decision_0hdop5w" name="Decision 1">
+    <informationRequirement id="InformationRequirement_1f90yuf">
+      <requiredDecision href="#Decision_18nnvai" />
+    </informationRequirement>
+    <informationRequirement id="InformationRequirement_18m719k">
+      <requiredInput href="#InputData_16p9xyz" />
+    </informationRequirement>
+    <decisionTable id="DecisionTable_1phq3x8">
+      <input id="Input_1" label="returnMeLabel">
+        <inputExpression id="InputExpression_1" typeRef="string">
+          <text>returnMeExp</text>
+        </inputExpression>
+      </input>
+      <input id="InputClause_07711rz" label="dontReturnMeLabel">
+        <inputExpression id="LiteralExpression_0qmkm6y" typeRef="string">
+          <text>dontReturnMeExp</text>
+        </inputExpression>
+      </input>
+      <output id="Output_1" typeRef="string" />
+    </decisionTable>
+  </decision>
+  <inputData id="InputData_16p9xyz" name="ReturnMeVar" />
+  <decision id="Decision_18nnvai" name="Decision 2">
+    <decisionTable id="DecisionTable_03bu4ci">
+      <input id="InputClause_1m51x88" label="someVar">
+        <inputExpression id="LiteralExpression_1p9nden" typeRef="string">
+          <text>someVar</text>
+        </inputExpression>
+      </input>
+      <output id="OutputClause_0o65o5d" label="dontReturnMeExp" name="dontReturnMeExp" typeRef="string" />
+    </decisionTable>
+  </decision>
+  <dmndi:DMNDI>
+    <dmndi:DMNDiagram>
+      <dmndi:DMNShape dmnElementRef="Decision_0hdop5w">
+        <dc:Bounds height="80" width="180" x="310" y="80" />
+      </dmndi:DMNShape>
+      <dmndi:DMNEdge id="DMNEdge_0o6zwab" dmnElementRef="InformationRequirement_1f90yuf">
+        <di:waypoint x="250" y="250" />
+        <di:waypoint x="370" y="180" />
+        <di:waypoint x="370" y="160" />
+      </dmndi:DMNEdge>
+      <dmndi:DMNShape id="DMNShape_0qagq3j" dmnElementRef="InputData_16p9xyz">
+        <dc:Bounds height="45" width="125" x="427" y="267" />
+      </dmndi:DMNShape>
+      <dmndi:DMNEdge id="DMNEdge_1mwjzhn" dmnElementRef="InformationRequirement_18m719k">
+        <di:waypoint x="490" y="267" />
+        <di:waypoint x="430" y="180" />
+        <di:waypoint x="430" y="160" />
+      </dmndi:DMNEdge>
+      <dmndi:DMNShape id="DMNShape_09wguzq" dmnElementRef="Decision_18nnvai">
+        <dc:Bounds height="80" width="180" x="160" y="250" />
+      </dmndi:DMNShape>
+    </dmndi:DMNDiagram>
+  </dmndi:DMNDI>
+</definitions>

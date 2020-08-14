@@ -4,17 +4,17 @@
     <decisionTable id="DecisionTable_1y92klm">
       <input id="Input_1" label="inputVar1">
         <inputExpression id="InputExpression_1" typeRef="string">
-          <text></text>
+          <text>exp1</text>
         </inputExpression>
       </input>
       <input id="InputClause_0a1jgl1" label="inputVar2">
         <inputExpression id="LiteralExpression_00armme" typeRef="boolean">
-          <text></text>
+          <text>exp2</text>
         </inputExpression>
       </input>
       <input id="InputClause_0rkvdtp" label="inputVar3">
         <inputExpression id="LiteralExpression_0gzd13z" typeRef="integer">
-          <text></text>
+          <text>exp3</text>
         </inputExpression>
       </input>
       <output id="Output_1" typeRef="string" />

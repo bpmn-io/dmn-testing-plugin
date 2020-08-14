@@ -17,7 +17,7 @@ describe('getInputVariables', function() {
     const decisions = getInputVariables(definitions);
 
     // then
-    expect(decisions.length).to.be.equal(2);
+    expect(decisions.length).to.equal(2);
   });
 
 
@@ -31,9 +31,9 @@ describe('getInputVariables', function() {
 
     // then
     expect(decisions[0].decision).to.equal('decision_1');
-    expect(decisions[0].variables[0]).to.include({ 'name': 'inputVar1', 'type': 'string' });
-    expect(decisions[0].variables[1]).to.include({ 'name': 'inputVar2', 'type': 'boolean' });
-    expect(decisions[0].variables[2]).to.include({ 'name': 'inputVar3', 'type': 'integer' });
+    expect(decisions[0].variables[0]).to.include({ 'name': 'inputVar1', 'type': 'string', 'expression': 'exp1' });
+    expect(decisions[0].variables[1]).to.include({ 'name': 'inputVar2', 'type': 'boolean', 'expression': 'exp2' });
+    expect(decisions[0].variables[2]).to.include({ 'name': 'inputVar3', 'type': 'integer', 'expression': 'exp3' });
   });
 
 
@@ -45,25 +45,36 @@ describe('getInputVariables', function() {
     // when
     const decisions = getInputVariables(definitions);
 
-    console.log(decisions);
-
     // then
     expect(decisions.length).to.be.equal(3);
-    expect(decisions[1].downstreamDecisions.length).to.be.equal(2);
-    expect(decisions[1].downstreamDecisions[0]).to.be.equal('decision_1');
+    expect(decisions[1].downstreamDecisions.length).to.equal(2);
+    expect(decisions[1].downstreamDecisions[0]).to.equal('decision_1');
   });
 
 
   it('should ignore input expressions', async function() {
 
     // given
-    const definitions = await read('./test/LiteralExpressionTest.dmn');
+    const definitions = await read('./test/LiteralExpressionDiagram.dmn');
 
     // when
     const decisions = getInputVariables(definitions);
 
     // then
-    expect(decisions.length).to.be.equal(1);
+    expect(decisions.length).to.equal(1);
+  });
+
+
+  it('should not return input variables which are set as an output', async function() {
+
+    // given
+    const definitions = await read('./test/OutputExpIsInputExpDiagram.dmn');
+
+    // when
+    const decisions = getInputVariables(definitions);
+
+    // then
+    expect(decisions[0].variables.length).to.equal(1);
   });
 
 });
