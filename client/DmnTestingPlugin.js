@@ -13,8 +13,9 @@ import React, { Fragment, PureComponent } from 'camunda-modeler-plugin-helpers/r
 import { Fill } from 'camunda-modeler-plugin-helpers/components';
 import TestingModal from './TestingModal';
 import { getInputVariables } from './InputVariableHelper';
+import EngineAPI from './EngineAPI';
 
-const EVALUATE_DECISION_ENDPOINT = 'http://localhost:9999/evaluateDecision';
+const ENGINE_ENDPOINT = 'http://localhost:9999';
 
 
 export default class DmnTestingPlugin extends PureComponent {
@@ -32,50 +33,17 @@ export default class DmnTestingPlugin extends PureComponent {
   }
 
   evaluateDmn = async ({ decision, variables }) => {
-
     const { activeTab } = this.state;
-
     const xml = activeTab.file.contents;
-    const payload = {
-      decision: decision.decisionId,
-      xml,
-      variables: {}
-    };
-    const headers = {
-      accept: 'application/json'
-    };
 
-    for (const { name, type, value } of variables) {
-      payload.variables[name] = { type, value };
-
-      // cast types when required
-      if (type === 'boolean') {
-        payload.variables[name].value = Boolean(value);
-      } else if ([ 'integer', 'long', 'double' ].includes(type)) {
-        payload.variables[name].value = Number(value);
-      }
-    }
+    const engineAPI = new EngineAPI(ENGINE_ENDPOINT);
 
     try {
-      const res = await fetch(EVALUATE_DECISION_ENDPOINT, {
-        method: 'POST',
-        headers,
-        body: JSON.stringify(payload)
-      });
+      const result = await engineAPI.evaluateDecision({ xml, decision, variables });
 
-      if (!res.ok) {
-        throw new Error(`${res.status} ${res.statusText}`);
-      }
-
-      const body = await res.json();
-
-      if (body.error) {
-        throw new Error(body.error);
-      }
-
-      console.log('evaluated successfully', body);
+      console.log('evaluated successfully', result);
     } catch (error) {
-      console.error('unable to evaluate decision: ', error, error.response);
+      console.error('unable to evaluate decision', error);
     }
   }
 
