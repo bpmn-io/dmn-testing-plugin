@@ -127,8 +127,8 @@ export default class ConfigModal extends React.PureComponent {
 
         <Modal.Footer>
           <div id="autoSaveConfigButtons">
-            <button type="submit" className="btn btn-primary" form="dmnTestingInputVarsForm">Test</button>
             <button type="button" className="btn btn-secondary" onClick={ () => onClose() }>Cancel</button>
+            <button type="submit" className="btn btn-primary" form="dmnTestingInputVarsForm">Test</button>
           </div>
         </Modal.Footer>
       </Modal>

@@ -14,6 +14,7 @@ import { Fill } from 'camunda-modeler-plugin-helpers/components';
 import TestingModal from './TestingModal';
 import { getInputVariables } from './InputVariableHelper';
 import EngineAPI from './EngineAPI';
+import ResultsModal from './ResultsModal';
 
 const ENGINE_ENDPOINT = 'http://localhost:9999';
 
@@ -28,7 +29,8 @@ export default class DmnTestingPlugin extends PureComponent {
     this.state = {
       activeTab: null,
       modalOpen: false,
-      decisions: null
+      decisions: null,
+      evaluation: null
     };
   }
 
@@ -38,13 +40,15 @@ export default class DmnTestingPlugin extends PureComponent {
 
     const engineAPI = new EngineAPI(ENGINE_ENDPOINT);
 
+    let evaluation;
     try {
-      const result = await engineAPI.evaluateDecision({ xml, decision, variables });
-
-      console.log('evaluated successfully', result);
+      const results = await engineAPI.evaluateDecision({ xml, decision, variables });
+      evaluation = { results };
     } catch (error) {
-      console.error('unable to evaluate decision', error);
+      evaluation = { error };
     }
+
+    this.setState({ evaluation });
   }
 
   componentDidMount() {
@@ -105,8 +109,19 @@ export default class DmnTestingPlugin extends PureComponent {
     return this.modelersMap.get(this.state.activeTab);
   }
 
+  closeResults = goBack => {
+    if (goBack) {
+      return this.setState({ evaluation: null });
+    }
+
+    this.setState({
+      evaluation: null,
+      modalOpen: false
+    });
+  }
+
   render() {
-    const { activeTab, decisions, modalOpen } = this.state;
+    const { activeTab, decisions, evaluation, modalOpen } = this.state;
 
     // we can use fills to hook React components into certain places of the UI
     return (activeTab && activeTab.type === 'dmn') ? <Fragment>
@@ -115,14 +130,21 @@ export default class DmnTestingPlugin extends PureComponent {
           Dmn Testing Plugin!
         </button>
       </Fill>
-      { modalOpen && (
-        <TestingModal
-          closeModal={ () => this.setState({ modalOpen: false }) }
-          decisions={ decisions }
-          initiallySelectedDecision={ decisions[0] }
-          evaluate={ this.evaluateDmn }
-        />
-      )}
+      {
+        evaluation ? (
+          <ResultsModal
+            closeModal={ this.closeResults }
+            evaluation={ evaluation }
+          />
+        ) : modalOpen ? (
+          <TestingModal
+            closeModal={ () => this.setState({ modalOpen: false }) }
+            decisions={ decisions }
+            initiallySelectedDecision={ decisions[0] }
+            evaluate={ this.evaluateDmn }
+          />
+        ) : null
+      }
     </Fragment> : null;
   }
 }
