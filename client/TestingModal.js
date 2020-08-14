@@ -44,7 +44,7 @@ export default class ConfigModal extends React.PureComponent {
     const inputVariables = decisions.flatMap(decision => {
       return decision.variables.map(variable => ({
         decision: decision.decision,
-        name: variable.name,
+        name: variable.expression,
         type: variable.type,
         value: ''
       }));
