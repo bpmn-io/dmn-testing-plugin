@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <definitions xmlns="https://www.omg.org/spec/DMN/20191111/MODEL/" xmlns:dmndi="https://www.omg.org/spec/DMN/20191111/DMNDI/" xmlns:dc="http://www.omg.org/spec/DMN/20180521/DC/" xmlns:di="http://www.omg.org/spec/DMN/20180521/DI/" id="drd" name="DRD" namespace="http://camunda.org/schema/1.0/dmn" exporter="Camunda Modeler" exporterVersion="4.2.0">
   <decision id="decision_1" name="dish">
+    <informationRequirement id="InformationRequirement_0sm19jl">
+      <requiredDecision href="#AnotherDownstream" />
+    </informationRequirement>
     <decisionTable id="DecisionTable_1y92klm">
       <input id="Input_1" label="inputVar1">
         <inputExpression id="InputExpression_1" typeRef="string">
@@ -46,35 +49,108 @@
       <output id="OutputClause_18x6ck7" typeRef="string" />
     </decisionTable>
   </decision>
+  <decision id="AnotherDownstream" name="AnotherDownstream">
+    <informationRequirement id="InformationRequirement_1kwmgnx">
+      <requiredDecision href="#YetAnotherDownstreamId" />
+    </informationRequirement>
+    <decisionTable id="DecisionTable_1n1cqgr">
+      <input id="InputClause_1me34cs">
+        <inputExpression id="LiteralExpression_034dt73" typeRef="string" />
+      </input>
+      <output id="OutputClause_1wcg5o8" typeRef="string" />
+    </decisionTable>
+  </decision>
+  <decision id="YetAnotherDownstreamId" name="YetAnotherDownstream">
+    <informationRequirement id="InformationRequirement_06v3skv">
+      <requiredDecision href="#thirdDownstreamOne" />
+    </informationRequirement>
+    <informationRequirement id="InformationRequirement_1h97w49">
+      <requiredDecision href="#thirdDownstreamTwo" />
+    </informationRequirement>
+    <decisionTable id="DecisionTable_0qy6c03">
+      <input id="InputClause_1c6xx1b">
+        <inputExpression id="LiteralExpression_1nadf2s" typeRef="string" />
+      </input>
+      <output id="OutputClause_10k2t9t" typeRef="string" />
+    </decisionTable>
+  </decision>
+  <decision id="thirdDownstreamOne" name="thirdDownstreamOne">
+    <decisionTable id="DecisionTable_1foraww">
+      <input id="InputClause_0w0zxj4">
+        <inputExpression id="LiteralExpression_1wy390s" typeRef="string" />
+      </input>
+      <output id="OutputClause_0p8ldfd" typeRef="string" />
+    </decisionTable>
+  </decision>
+  <decision id="thirdDownstreamTwo" name="thirdDownstreamTwo">
+    <decisionTable id="DecisionTable_15m5gfm">
+      <input id="InputClause_18ewmzb">
+        <inputExpression id="LiteralExpression_1j81gz2" typeRef="string" />
+      </input>
+      <output id="OutputClause_09bwoe6" typeRef="string" />
+    </decisionTable>
+  </decision>
   <dmndi:DMNDI>
     <dmndi:DMNDiagram>
       <dmndi:DMNShape dmnElementRef="decision_1">
-        <dc:Bounds height="80" width="180" x="160" y="260" />
+        <dc:Bounds height="80" width="180" x="330" y="260" />
       </dmndi:DMNShape>
       <dmndi:DMNShape id="DMNShape_02smhcf" dmnElementRef="decision_with_downstream">
-        <dc:Bounds height="80" width="180" x="360" y="80" />
+        <dc:Bounds height="80" width="180" x="530" y="80" />
       </dmndi:DMNShape>
       <dmndi:DMNShape id="DMNShape_0yd7xmy" dmnElementRef="inputExpression_1">
-        <dc:Bounds height="45" width="125" x="477" y="277" />
+        <dc:Bounds height="45" width="125" x="647" y="277" />
       </dmndi:DMNShape>
       <dmndi:DMNEdge id="DMNEdge_091hps5" dmnElementRef="InformationRequirement_14wcov7">
-        <di:waypoint x="540" y="277" />
-        <di:waypoint x="450" y="180" />
-        <di:waypoint x="450" y="160" />
+        <di:waypoint x="710" y="277" />
+        <di:waypoint x="620" y="180" />
+        <di:waypoint x="620" y="160" />
       </dmndi:DMNEdge>
       <dmndi:DMNEdge id="DMNEdge_0a3wtni" dmnElementRef="InformationRequirement_0e36g5d">
-        <di:waypoint x="250" y="260" />
-        <di:waypoint x="405" y="180" />
-        <di:waypoint x="405" y="160" />
+        <di:waypoint x="420" y="260" />
+        <di:waypoint x="575" y="180" />
+        <di:waypoint x="575" y="160" />
       </dmndi:DMNEdge>
       <dmndi:DMNShape id="DMNShape_0c0rno5" dmnElementRef="Decision_0ke7tnl">
-        <dc:Bounds height="80" width="180" x="690" y="260" />
+        <dc:Bounds height="80" width="180" x="860" y="260" />
       </dmndi:DMNShape>
       <dmndi:DMNEdge id="DMNEdge_1v4rbz7" dmnElementRef="InformationRequirement_1r19oaa">
-        <di:waypoint x="780" y="260" />
-        <di:waypoint x="495" y="180" />
-        <di:waypoint x="495" y="160" />
+        <di:waypoint x="950" y="260" />
+        <di:waypoint x="665" y="180" />
+        <di:waypoint x="665" y="160" />
       </dmndi:DMNEdge>
+      <dmndi:DMNEdge id="DMNEdge_0dpep3j" dmnElementRef="InformationRequirement_0sm19jl">
+        <di:waypoint x="410" y="440" />
+        <di:waypoint x="420" y="360" />
+        <di:waypoint x="420" y="340" />
+      </dmndi:DMNEdge>
+      <dmndi:DMNShape id="DMNShape_1cv457b" dmnElementRef="AnotherDownstream">
+        <dc:Bounds height="80" width="180" x="320" y="440" />
+      </dmndi:DMNShape>
+      <dmndi:DMNEdge id="DMNEdge_19q4wp5" dmnElementRef="InformationRequirement_1kwmgnx">
+        <di:waypoint x="410" y="620" />
+        <di:waypoint x="410" y="540" />
+        <di:waypoint x="410" y="520" />
+      </dmndi:DMNEdge>
+      <dmndi:DMNShape id="DMNShape_0v1swza" dmnElementRef="YetAnotherDownstreamId">
+        <dc:Bounds height="80" width="180" x="320" y="620" />
+      </dmndi:DMNShape>
+      <dmndi:DMNEdge id="DMNEdge_0c0c3gz" dmnElementRef="InformationRequirement_06v3skv">
+        <di:waypoint x="250" y="800" />
+        <di:waypoint x="380" y="720" />
+        <di:waypoint x="380" y="700" />
+      </dmndi:DMNEdge>
+      <dmndi:DMNShape id="DMNShape_0jeyx1p" dmnElementRef="thirdDownstreamOne">
+        <dc:Bounds height="80" width="180" x="160" y="800" />
+      </dmndi:DMNShape>
+      <dmndi:DMNEdge id="DMNEdge_0k8kf98" dmnElementRef="InformationRequirement_1h97w49">
+        <di:waypoint x="490" y="800" />
+        <di:waypoint x="440" y="720" />
+        <di:waypoint x="440" y="700" />
+      </dmndi:DMNEdge>
+      <dmndi:DMNShape id="DMNShape_15mtnfh" dmnElementRef="thirdDownstreamTwo">
+        <dc:Bounds height="80" width="180" x="400" y="800" />
+      </dmndi:DMNShape>
     </dmndi:DMNDiagram>
   </dmndi:DMNDI>
 </definitions>
