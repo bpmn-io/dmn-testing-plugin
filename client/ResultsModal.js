@@ -21,35 +21,18 @@ export default function ResultsModal(props) {
 
       <Modal.Body>
 
-        { error ? (
-          <Fragment>
-            <h3>
-              Evaluation failed
-            </h3>
-            <div>
-              { error.message }
-            </div>
-          </Fragment>
-        ) : (
-          <Fragment>
-            <h3>
-              Successfully evaluated decision
-            </h3>
-            <div>
-              Results:
-              <pre>
-                { asReadableJSON(results) }
-              </pre>
-            </div>
-          </Fragment>
-        )}
+        {
+          error ?
+            <ErrorResults error={ error } /> :
+            <SuccessResults results={ results } />
+        }
 
       </Modal.Body>
 
       <Modal.Footer>
         <div>
           <button type="button" className="btn btn-secondary" onClick={ goBack }>Go back</button>
-          <button type="button" className="btn btn-primary" onClick={ onClose }>Close</button>
+          <button type="button" className="btn btn-primary" onClick={ onClose } autoFocus>Close</button>
         </div>
       </Modal.Footer>
     </Modal>
@@ -57,6 +40,52 @@ export default function ResultsModal(props) {
   );
 }
 
-function asReadableJSON(object) {
-  return JSON.stringify(object, null, 2);
+function ErrorResults(props) {
+  const { error } = props;
+
+  return (
+    <Fragment>
+      <h3>
+        Evaluation failed
+      </h3>
+      <div>
+        { error.message }
+      </div>
+    </Fragment>
+  );
+}
+
+function SuccessResults(props) {
+  const { results } = props;
+
+  const Results = () => (
+    <ul>
+      {
+        results.map(decision => (
+          <li title={ 'id: ' + decision.id }>
+            {decision.name}
+            { decision.outputs.length ? (
+              <ul>
+                { decision.outputs.map(output => (
+                  <li title={ 'id: ' + output.id }>{output.name}: {output.values.join(', ')}</li>
+                )) }
+              </ul>
+            ) : null }
+          </li>
+        ))
+      }
+    </ul>
+  );
+
+  return (
+    <Fragment>
+      <h3>
+        Successfully evaluated decision
+      </h3>
+      <div>
+        Results per decision:
+        <Results />
+      </div>
+    </Fragment>
+  );
 }

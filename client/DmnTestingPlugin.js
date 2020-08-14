@@ -15,6 +15,7 @@ import TestingModal from './TestingModal';
 import { getInputVariables } from './InputVariableHelper';
 import EngineAPI from './EngineAPI';
 import ResultsModal from './ResultsModal';
+import { map } from 'min-dash';
 
 const ENGINE_ENDPOINT = 'http://localhost:9999';
 
@@ -42,13 +43,52 @@ export default class DmnTestingPlugin extends PureComponent {
 
     let evaluation;
     try {
-      const results = await engineAPI.evaluateDecision({ xml, decision, variables });
+      const rawResults = await engineAPI.evaluateDecision({ xml, decision, variables });
+      const results = this.getResults(rawResults);
+
       evaluation = { results };
     } catch (error) {
       evaluation = { error };
     }
 
     this.setState({ evaluation });
+  }
+
+  // TODO @barmac: refactor
+  getResults(rawResults) {
+    const definitions = this.getDefinitions();
+    const drg = definitions.get('drgElement');
+
+    const results = map(rawResults, ({ rules }, decisionId) => {
+      const businessObject = drg.find(({ id }) => id === decisionId);
+      const {
+        id,
+        name,
+        decisionLogic
+      } = businessObject;
+
+      const result = { id, name, outputs: [] };
+
+      result.outputs = rules.map(rule => rule.outputs).flat();
+
+      const decisionOutputs = decisionLogic.get('output');
+      const simpleOutputs = decisionOutputs.map(
+        ({ id, name, expression }) => ({ id, name, expression, values: [] })
+      );
+
+      for (const output of result.outputs) {
+        const [ id, value ] = Object.entries(output)[0];
+
+        const actualOutput = simpleOutputs.find(o => o.id === id);
+        actualOutput.values.push(value);
+      }
+
+      result.outputs = simpleOutputs;
+
+      return result;
+    });
+
+    return results;
   }
 
   componentDidMount() {
@@ -88,9 +128,7 @@ export default class DmnTestingPlugin extends PureComponent {
       return;
     }
 
-    const modeler = this.getModeler();
-    const definitions = modeler.getDefinitions();
-
+    const definitions = this.getDefinitions();
     const decisions = getInputVariables(definitions);
 
     this.setState({ modalOpen: true, decisions });
@@ -103,6 +141,10 @@ export default class DmnTestingPlugin extends PureComponent {
 
     // trigger a tab save operation
     return triggerAction('save-tab', { tab: this.state.activeTab });
+  }
+
+  getDefinitions() {
+    return this.getModeler().getDefinitions();
   }
 
   getModeler() {
