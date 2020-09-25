@@ -5,12 +5,14 @@ import { Modal } from 'camunda-modeler-plugin-helpers/components';
 export default function ResultsModal(props) {
   const {
     closeModal,
-    evaluation
+    evaluation,
+    displayInDiagram
   } = props;
 
   const { error, results } = evaluation;
   const goBack = () => closeModal(true);
   const onClose = () => closeModal();
+  const onDisplayDiagram = () => displayInDiagram();
 
   return (
     <Modal onClose={ onClose }>
@@ -33,6 +35,7 @@ export default function ResultsModal(props) {
         <div>
           <button type="button" className="btn btn-secondary" onClick={ goBack }>Go back</button>
           <button type="button" className="btn btn-primary" onClick={ onClose } autoFocus>Close</button>
+          <button type="button" className="btn btn-primary" onClick={ onDisplayDiagram }>Display in diagram</button>
         </div>
       </Modal.Footer>
     </Modal>

@@ -193,7 +193,7 @@ class DmnTestingPlugin extends camunda_modeler_plugin_helpers_react__WEBPACK_IMP
       }
 
       this.setState({
-        evaluation
+        evaluation: evaluation
       });
     });
 
@@ -217,10 +217,39 @@ class DmnTestingPlugin extends camunda_modeler_plugin_helpers_react__WEBPACK_IMP
         return this.setState({
           evaluation: null
         });
-      }
+      } // Remove css style (we potential set for rule highlighting)
 
+
+      const rows = this.getCurrentBodyRows();
+      rows.forEach(row => row.setAttribute('style', ''));
       this.setState({
         evaluation: null,
+        modalOpen: false
+      });
+    });
+
+    _defineProperty(this, "highlightResults", () => {
+      const activeView = this.getModeler()._activeView,
+            results = this.state.evaluation.results;
+
+      results.forEach((decision, idx) => {
+        // Adjust css if we are in the right view
+        if (decision.id === activeView.id) {
+          // Get decisions which were matched
+          const matchedDecisionIds = decision.ruleId,
+                decisionIdsPresent = activeView.element.decisionLogic.rule.map(e => e.id); // get idx of rows to highlight
+
+          const matchedIdx = decisionIdsPresent.reduce((acc, curr, idx) => {
+            return matchedDecisionIds.includes(curr) ? acc.concat(idx) : acc;
+          }, []); // Add css style
+
+          const rows = this.getCurrentBodyRows();
+          matchedIdx.forEach(idx => {
+            rows[idx].setAttribute('style', 'background: lightgreen');
+          });
+        }
+      });
+      this.setState({
         modalOpen: false
       });
     });
@@ -255,6 +284,7 @@ class DmnTestingPlugin extends camunda_modeler_plugin_helpers_react__WEBPACK_IMP
         outputs: []
       };
       result.outputs = rules.map(rule => rule.outputs).flat();
+      result.ruleId = rules.map(rule => rule.ruleId);
       const decisionOutputs = decisionLogic.get('output');
       const simpleOutputs = decisionOutputs.map(({
         id,
@@ -330,6 +360,10 @@ class DmnTestingPlugin extends camunda_modeler_plugin_helpers_react__WEBPACK_IMP
     return this.modelersMap.get(this.state.activeTab);
   }
 
+  getCurrentBodyRows() {
+    return this.getModeler()._container.querySelectorAll('tbody tr');
+  }
+
   render() {
     const {
       activeTab,
@@ -344,9 +378,10 @@ class DmnTestingPlugin extends camunda_modeler_plugin_helpers_react__WEBPACK_IMP
     }, /*#__PURE__*/camunda_modeler_plugin_helpers_react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("button", {
       type: "button",
       onClick: this.openModal
-    }, "DMN Testing")), evaluation ? /*#__PURE__*/camunda_modeler_plugin_helpers_react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_ResultsModal__WEBPACK_IMPORTED_MODULE_5__["default"], {
+    }, "DMN Testing")), modalOpen && evaluation ? /*#__PURE__*/camunda_modeler_plugin_helpers_react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_ResultsModal__WEBPACK_IMPORTED_MODULE_5__["default"], {
       closeModal: this.closeResults,
-      evaluation: evaluation
+      evaluation: evaluation,
+      displayInDiagram: this.highlightResults
     }) : modalOpen ? /*#__PURE__*/camunda_modeler_plugin_helpers_react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_TestingModal__WEBPACK_IMPORTED_MODULE_2__["default"], {
       closeModal: () => this.setState({
         modalOpen: false
@@ -572,7 +607,8 @@ __webpack_require__.r(__webpack_exports__);
 function ResultsModal(props) {
   const {
     closeModal,
-    evaluation
+    evaluation,
+    displayInDiagram
   } = props;
   const {
     error,
@@ -582,6 +618,8 @@ function ResultsModal(props) {
   const goBack = () => closeModal(true);
 
   const onClose = () => closeModal();
+
+  const onDisplayDiagram = () => displayInDiagram();
 
   return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(camunda_modeler_plugin_helpers_components__WEBPACK_IMPORTED_MODULE_1__["Modal"], {
     onClose: onClose
@@ -598,7 +636,11 @@ function ResultsModal(props) {
     className: "btn btn-primary",
     onClick: onClose,
     autoFocus: true
-  }, "Close"))));
+  }, "Close"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("button", {
+    type: "button",
+    className: "btn btn-primary",
+    onClick: onDisplayDiagram
+  }, "Display in diagram"))));
 }
 
 function ErrorResults(props) {
