@@ -51,7 +51,9 @@ export default class DmnTestingPlugin extends PureComponent {
       evaluation = { error };
     }
 
-    this.setState({ evaluation });
+    this.setState({
+      evaluation: evaluation
+    });
   }
 
   // TODO @barmac: refactor
@@ -70,6 +72,7 @@ export default class DmnTestingPlugin extends PureComponent {
       const result = { id, name, outputs: [] };
 
       result.outputs = rules.map(rule => rule.outputs).flat();
+      result.ruleId = rules.map(rule => rule.ruleId);
 
       const decisionOutputs = decisionLogic.get('output');
       const simpleOutputs = decisionOutputs.map(
@@ -151,10 +154,18 @@ export default class DmnTestingPlugin extends PureComponent {
     return this.modelersMap.get(this.state.activeTab);
   }
 
+  getCurrentBodyRows() {
+    return this.getModeler()._container.querySelectorAll('tbody tr');
+  }
+
   closeResults = goBack => {
     if (goBack) {
       return this.setState({ evaluation: null });
     }
+
+    // Remove css style (we potential set for rule highlighting)
+    const rows = this.getCurrentBodyRows();
+    rows.forEach((row) => row.setAttribute('style', ''));
 
     this.setState({
       evaluation: null,
@@ -162,8 +173,45 @@ export default class DmnTestingPlugin extends PureComponent {
     });
   }
 
+  highlightResults = () => {
+    const activeView = this.getModeler()._activeView,
+          results = this.state.evaluation.results;
+
+    results.forEach((decision, idx) => {
+
+      // Adjust css if we are in the right view
+      if (decision.id === activeView.id) {
+
+        // Get decisions which were matched
+        const matchedDecisionIds = decision.ruleId,
+              decisionIdsPresent = activeView.element.decisionLogic.rule.map(e => e.id);
+
+        // get idx of rows to highlight
+        const matchedIdx = decisionIdsPresent.reduce((acc, curr, idx) => {
+          return matchedDecisionIds.includes(curr) ?
+            acc.concat(idx) : acc;
+        }, []);
+
+        // Add css style
+        const rows = this.getCurrentBodyRows();
+        matchedIdx.forEach(idx => {
+          rows[idx].setAttribute('style', 'background: lightgreen');
+        });
+      }
+    });
+
+    this.setState({
+      modalOpen: false
+    });
+  }
+
   render() {
-    const { activeTab, decisions, evaluation, modalOpen } = this.state;
+    const {
+      activeTab,
+      decisions,
+      evaluation,
+      modalOpen
+    } = this.state;
 
     // we can use fills to hook React components into certain places of the UI
     return (activeTab && activeTab.type === 'dmn') ? <Fragment>
@@ -173,10 +221,11 @@ export default class DmnTestingPlugin extends PureComponent {
         </button>
       </Fill>
       {
-        evaluation ? (
+        modalOpen && evaluation ? (
           <ResultsModal
             closeModal={ this.closeResults }
             evaluation={ evaluation }
+            displayInDiagram={ this.highlightResults }
           />
         ) : modalOpen ? (
           <TestingModal

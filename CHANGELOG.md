@@ -5,6 +5,7 @@ All notable changes to the [Camunda DMN Testing Plugin](https://github.com/bpmn-
 ## Unreleased
 
 ___Note:__ Yet to be released changes appear here._
+* feat(client): highlight evaluated decision results in DMN decision table (https://github.com/bpmn-io/dmn-testing-plugin/issues/7)
 
 ## 0.1.0
 
