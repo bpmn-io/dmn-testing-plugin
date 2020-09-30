@@ -19,7 +19,7 @@ export function getInputVariables(container) {
     return {
       'decision': decision.name,
       'decisionId': decision.id,
-      'variables': decision.decisionLogic.input.filter(input => !isOutput(input, decisions))
+      'variables': decision.decisionLogic.get('input').filter(input => !isOutput(input, decisions))
         .map((input) => {
           return {
             'name': input.label,

@@ -77,6 +77,18 @@ describe('getInputVariables', function() {
     expect(decisions[0].variables.length).to.equal(1);
   });
 
+
+  it('should not fail when decision contains no inputs', async function() {
+
+    // given
+    const definitions = await read('./test/MissingInput.dmn');
+
+    // when
+    const decisions = getInputVariables(definitions);
+
+    // then
+    expect(decisions[0].variables.length).to.equal(0);
+  });
 });
 
 // helpers
