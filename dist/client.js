@@ -140,6 +140,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _EngineAPI__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./EngineAPI */ "./client/EngineAPI.js");
 /* harmony import */ var _ResultsModal__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./ResultsModal */ "./client/ResultsModal.js");
 /* harmony import */ var min_dash__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! min-dash */ "./node_modules/min-dash/dist/index.esm.js");
+/* harmony import */ var _results_highlighting_ResultsHighlighting__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./results-highlighting/ResultsHighlighting */ "./client/results-highlighting/ResultsHighlighting.js");
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
 /**
@@ -153,6 +154,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
  */
 
 /* eslint-disable no-unused-vars*/
+
 
 
 
@@ -217,11 +219,10 @@ class DmnTestingPlugin extends camunda_modeler_plugin_helpers_react__WEBPACK_IMP
         return this.setState({
           evaluation: null
         });
-      } // Remove css style (we potential set for rule highlighting)
+      } // clear rule highlighting
 
 
-      const rows = this.getCurrentBodyRows();
-      rows.forEach(row => row.setAttribute('style', ''));
+      this.resultsHighlighting.clear();
       this.setState({
         evaluation: null,
         modalOpen: false
@@ -229,26 +230,7 @@ class DmnTestingPlugin extends camunda_modeler_plugin_helpers_react__WEBPACK_IMP
     });
 
     _defineProperty(this, "highlightResults", () => {
-      const activeView = this.getModeler()._activeView,
-            results = this.state.evaluation.results;
-
-      results.forEach((decision, idx) => {
-        // Adjust css if we are in the right view
-        if (decision.id === activeView.id) {
-          // Get decisions which were matched
-          const matchedDecisionIds = decision.ruleId,
-                decisionIdsPresent = activeView.element.decisionLogic.rule.map(e => e.id); // get idx of rows to highlight
-
-          const matchedIdx = decisionIdsPresent.reduce((acc, curr, idx) => {
-            return matchedDecisionIds.includes(curr) ? acc.concat(idx) : acc;
-          }, []); // Add css style
-
-          const rows = this.getCurrentBodyRows();
-          matchedIdx.forEach(idx => {
-            rows[idx].setAttribute('style', 'background: lightgreen');
-          });
-        }
-      });
+      this.resultsHighlighting.highlightResults(this.state.evaluation.results);
       this.setState({
         modalOpen: false
       });
@@ -261,6 +243,7 @@ class DmnTestingPlugin extends camunda_modeler_plugin_helpers_react__WEBPACK_IMP
       decisions: null,
       evaluation: null
     };
+    this.resultsHighlighting = Object(_results_highlighting_ResultsHighlighting__WEBPACK_IMPORTED_MODULE_7__["createResultsHighlighting"])(this);
   }
 
   // TODO @barmac: refactor
@@ -832,6 +815,84 @@ __webpack_require__.r(__webpack_exports__);
 
 
 Object(camunda_modeler_plugin_helpers__WEBPACK_IMPORTED_MODULE_0__["registerClientExtension"])(_DmnTestingPlugin__WEBPACK_IMPORTED_MODULE_1__["default"]);
+
+/***/ }),
+
+/***/ "./client/results-highlighting/ResultsHighlighting.js":
+/*!************************************************************!*\
+  !*** ./client/results-highlighting/ResultsHighlighting.js ***!
+  \************************************************************/
+/*! exports provided: createResultsHighlighting */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "createResultsHighlighting", function() { return createResultsHighlighting; });
+const HIGHLIGHTING_STYLE = `{
+  background-color: #a2c5ff !important;
+  background-color: var(--blue-lighten-82) !important;
+}`;
+const TOGGLE_EVENTS = ['attach', 'detach'];
+function createResultsHighlighting(dmnTestingPlugin) {
+  const styleElement = document.createElement('style');
+  document.head.appendChild(styleElement);
+  const {
+    sheet
+  } = styleElement;
+  let modeler;
+
+  function clear() {
+    if (sheet.cssRules.length) {
+      sheet.removeRule(0);
+    }
+
+    if (modeler) {
+      modeler.off(TOGGLE_EVENTS, toggleSheet);
+    }
+  }
+
+  function highlightResults(results) {
+    this.clear();
+    const selector = getRulesSelector(results);
+    sheet.insertRule(`${selector}${HIGHLIGHTING_STYLE}`, 0);
+    sheet.disabled = false;
+    modeler = dmnTestingPlugin.getModeler();
+    modeler.on(TOGGLE_EVENTS, toggleSheet);
+  }
+
+  function destroy() {
+    styleElement.remove();
+  }
+
+  function toggleSheet() {
+    sheet.disabled = !sheet.disabled;
+  }
+
+  return {
+    clear,
+    highlightResults,
+    destroy
+  };
+}
+
+function getRulesSelector(results) {
+  const ruleIds = getRuleIds(results);
+  const rowSelectors = ruleIds.map(id => `[data-row-id=${id}]`); // select also "add input" cells in case of missing input
+
+  const addInputSelectors = rowSelectors.map(rowSelector => `${rowSelector} + td`);
+  return rowSelectors.concat(addInputSelectors).join(',');
+}
+/**
+ * Extract rule ids from results.
+ *
+ * @param {{ ruleId: string[] }[]} results
+ * @returns {string[]}
+ */
+
+
+function getRuleIds(results) {
+  return results.flatMap(result => result.ruleId);
+}
 
 /***/ }),
 

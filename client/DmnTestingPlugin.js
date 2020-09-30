@@ -17,6 +17,8 @@ import EngineAPI from './EngineAPI';
 import ResultsModal from './ResultsModal';
 import { map } from 'min-dash';
 
+import { createResultsHighlighting } from './results-highlighting/ResultsHighlighting';
+
 const ENGINE_ENDPOINT = 'http://localhost:9999';
 
 
@@ -33,6 +35,8 @@ export default class DmnTestingPlugin extends PureComponent {
       decisions: null,
       evaluation: null
     };
+
+    this.resultsHighlighting = createResultsHighlighting(this);
   }
 
   evaluateDmn = async ({ decision, variables }) => {
@@ -163,9 +167,8 @@ export default class DmnTestingPlugin extends PureComponent {
       return this.setState({ evaluation: null });
     }
 
-    // Remove css style (we potential set for rule highlighting)
-    const rows = this.getCurrentBodyRows();
-    rows.forEach((row) => row.setAttribute('style', ''));
+    // clear rule highlighting
+    this.resultsHighlighting.clear();
 
     this.setState({
       evaluation: null,
@@ -174,31 +177,7 @@ export default class DmnTestingPlugin extends PureComponent {
   }
 
   highlightResults = () => {
-    const activeView = this.getModeler()._activeView,
-          results = this.state.evaluation.results;
-
-    results.forEach((decision, idx) => {
-
-      // Adjust css if we are in the right view
-      if (decision.id === activeView.id) {
-
-        // Get decisions which were matched
-        const matchedDecisionIds = decision.ruleId,
-              decisionIdsPresent = activeView.element.decisionLogic.rule.map(e => e.id);
-
-        // get idx of rows to highlight
-        const matchedIdx = decisionIdsPresent.reduce((acc, curr, idx) => {
-          return matchedDecisionIds.includes(curr) ?
-            acc.concat(idx) : acc;
-        }, []);
-
-        // Add css style
-        const rows = this.getCurrentBodyRows();
-        matchedIdx.forEach(idx => {
-          rows[idx].setAttribute('style', 'background: lightgreen');
-        });
-      }
-    });
+    this.resultsHighlighting.highlightResults(this.state.evaluation.results);
 
     this.setState({
       modalOpen: false
