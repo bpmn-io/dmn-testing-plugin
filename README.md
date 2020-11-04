@@ -16,9 +16,10 @@ This plugin allows to test DRD diagrams. Currently the plugin supports the follo
 
 1. Make sure to have `JAVA` installed (required to run the DMN decision engine)
 2. Download and copy this repository into the `plugins` directory of the Camunda Modeler
-3. Start the Camunda Modeler
-4. Start the `Testing` Modal by clicking the respective menu button when having a `.dmn` file open
-5. Edit the input parameters as required and start an evaluation by clicking on `Test`
+3. Run `npm install` in the plugin directory
+4. Start the Camunda Modeler
+5. Start the `Testing` Modal by clicking the respective menu button when having a `.dmn` file open
+6. Edit the input parameters as required and start an evaluation by clicking on `Test`
 
 Refer to the [plugins documentation](https://github.com/camunda/camunda-modeler/tree/master/docs/plugins#plugging-into-the-camunda-modeler) to get detailed information on how to create and integrate Camunda Modeler plugins.
 
