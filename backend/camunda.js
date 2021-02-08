@@ -2,7 +2,7 @@ const which = require('which');
 const execa = require('execa');
 const path = require('path');
 
-const CAMUNDA_PATH = path.resolve(__dirname, 'camunda/artefacts/camundaDmnTestServer.jar');
+const CAMUNDA_PATH = process.env.CAMUNDA_PATH || path.resolve(__dirname, 'camunda/artefacts/camundaDmnTestServer.jar');
 let camundaProcess;
 
 
