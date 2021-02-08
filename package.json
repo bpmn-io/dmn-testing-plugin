@@ -35,7 +35,7 @@
     "webpack-cli": "^3.3.11"
   },
   "dependencies": {
-    "camunda-dmn-moddle": "^1.0.0",
+    "camunda-dmn-moddle": "^1.1.0",
     "dmn-js-shared": "^9.2.0",
     "dmn-moddle": "^9.1.0",
     "esm": "^3.2.25",
