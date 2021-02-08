@@ -11,6 +11,6 @@
 module.exports = {
   script: './dist/client.js',
   style: './client/style.css',
-  menu: './backend/main.js',
+  menu: './dist/main.js',
   name: 'dmn-testing-plugin'
 };
