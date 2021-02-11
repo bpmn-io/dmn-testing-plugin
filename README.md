@@ -1,6 +1,6 @@
 # dmn-testing-plugin
 
-[![Build Status](https://travis-ci.com/bpmn-io/dmn-testing-plugin.svg?branch=master)](https://travis-ci.com/github/bpmn-io/dmn-testing-plugin)
+[![Build Status](https://github.com/bpmn-io/dmn-testing-plugin/workflows/CI/badge.svg)](https://github.com/bpmn-io/dmn-testing-plugin/actions?query=workflow%3ACI)
 [![Compatible with Camunda Modeler version 4.2+](https://img.shields.io/badge/Camunda%20Modeler-4.2+-blue.svg)](https://github.com/camunda/camunda-modeler)
 
 This plugin allows to test DRD diagrams. Currently the plugin supports the following core features:
