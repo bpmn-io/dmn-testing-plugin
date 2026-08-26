@@ -18,12 +18,14 @@
     "build": "webpack -c",
     "dev": "webpack -c -w",
     "lint": "eslint .",
-    "test": "mocha -r esm test/*Spec.js"
+    "test": "mocha -r ./test/register.cjs test/*Spec.js"
   },
   "devDependencies": {
     "@babel/core": "^7.9.0",
     "@babel/plugin-proposal-class-properties": "^7.10.4",
+    "@babel/plugin-transform-modules-commonjs": "^7.29.7",
     "@babel/preset-react": "^7.9.4",
+    "@babel/register": "^7.29.7",
     "babel-loader": "^8.1.0",
     "camunda-modeler-plugin-helpers": "^3.4.0-alpha.0",
     "chai": "^4.2.0",
@@ -39,7 +41,6 @@
     "camunda-dmn-moddle": "^1.1.0",
     "dmn-js-shared": "^9.2.0",
     "dmn-moddle": "^9.1.0",
-    "esm": "^3.2.25",
     "execa": "^4.0.3",
     "formik": "^2.1.5",
     "which": "^2.0.2"
